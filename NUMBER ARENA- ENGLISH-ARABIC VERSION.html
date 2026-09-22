@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Number Arena: Decimals &amp; Fractions</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Baloo+Bhaijaan+2:wght@500;700;800&family=Lalezar&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#d9efff;--bg2:#bfe3ff;--panel:#ffffff;--panel2:#eef6ff;--ink:#132046;--muted:#4b5b80;--line:#132046;--dk:#0b1236;
+  --blue:#2f6bff;--orange:#ff8a24;--green:#27c768;--yellow:#ffc619;--pink:#ff5f9e;--purple:#7b4dff;--cyan:#22c7ee;--red:#e5383b;
+  --okbg:#c8f6d6;--nobg:#ffd9d9;--warnbg:#fff0b8;--hi:#fff7d1;
+  --fd:'Lilita One','Lalezar','Arial Rounded MT Bold','Trebuchet MS',Tahoma,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0f1446;--bg2:#171e63;--panel:#212a7a;--panel2:#1a2168;--ink:#f3f5ff;--muted:#bcc4f7;--line:#04061f;--okbg:#12613a;--nobg:#7a2330;--warnbg:#6b5a0e;--hi:#3a3f9a}
+}
+:root[data-theme="dark"]{--bg:#0f1446;--bg2:#171e63;--panel:#212a7a;--panel2:#1a2168;--ink:#f3f5ff;--muted:#bcc4f7;--line:#04061f;--okbg:#12613a;--nobg:#7a2330;--warnbg:#6b5a0e;--hi:#3a3f9a}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Baloo 2','Baloo Bhaijaan 2','Trebuchet MS','Segoe UI',Tahoma,system-ui,sans-serif;font-weight:600;font-size:17px;line-height:1.35;min-height:100vh}
+h1,h2,h3,.disp,.btn,.chip,.inp{font-family:var(--fd);font-weight:400}
+h1,h2,h3,p{margin:0}
+h1{font-size:clamp(2.4rem,9vw,4rem);line-height:1}
+h2{font-size:1.7rem;line-height:1.1}
+h3{font-size:1.25rem}
+#app{max-width:940px;margin:0 auto;padding:12px 14px 70px}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:4px solid var(--purple);outline-offset:2px}
+.muted{color:var(--muted)}
+.sp{flex:1}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{background:var(--panel);border:3px solid var(--line);border-radius:999px;padding:3px 12px;display:inline-flex;align-items:center;gap:6px;font-size:1rem;color:var(--ink)}
+button.chip{box-shadow:0 3px 0 var(--line)}
+button.chip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.chip.rk{background:var(--yellow);color:var(--dk)}
+
+/* buttons */
+.btn{border:3px solid var(--line);border-radius:16px;padding:10px 18px;font-size:1.1rem;box-shadow:0 5px 0 var(--line);background:var(--blue);color:#fff;transition:transform .08s,box-shadow .08s;min-height:46px}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--line)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.b-blue{background:var(--blue);color:#fff}
+.b-purple{background:var(--purple);color:#fff}
+.b-red{background:var(--red);color:#fff}
+.b-orange{background:var(--orange);color:var(--dk)}
+.b-green{background:var(--green);color:var(--dk)}
+.b-yellow{background:var(--yellow);color:var(--dk)}
+.b-pink{background:var(--pink);color:var(--dk)}
+.b-cyan{background:var(--cyan);color:var(--dk)}
+.b-plain{background:var(--panel);color:var(--ink)}
+.big{font-size:1.5rem;padding:14px 26px;border-radius:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.c{justify-content:center}
+.back{margin:0 0 12px}
+
+/* cards */
+.card{background:var(--panel);border:3px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 6px 0 var(--line)}
+.card+.card{margin-top:18px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:18px}
+.pill{display:inline-block;border:2px solid var(--line);border-radius:999px;padding:0 10px;font-size:.85rem;background:var(--hi);color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(150px,240px) 1fr;gap:18px;align-items:center;background:var(--bg2);border:3px solid var(--line);border-radius:30px;padding:18px;box-shadow:0 6px 0 var(--line)}
+.hero .sub{font-size:1.15rem;margin:8px 0 14px;max-width:32ch}
+.mascot{position:relative}
+.bot{width:100%;max-width:200px;display:block;margin:0 auto;animation:bob 3s ease-in-out infinite}
+.bubble{background:var(--panel);border:3px solid var(--line);border-radius:18px;padding:8px 12px;font-size:.95rem;margin-top:8px;position:relative;text-align:center}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (max-width:560px){.hero{grid-template-columns:1fr;text-align:center}.hero .sub{margin-inline:auto}}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px}
+.tile{border:3px solid var(--line);border-radius:22px;padding:14px;text-align:left;box-shadow:0 6px 0 var(--line);display:flex;flex-direction:column;gap:2px;min-height:118px;text-align:start;transition:transform .08s,box-shadow .08s}
+.tile:active{transform:translateY(5px);box-shadow:0 1px 0 var(--line)}
+.tile .em{font-size:2rem;line-height:1}
+.tile h3{color:inherit}
+.tile small{font-size:.95rem;font-weight:700;opacity:.9}
+.tile.b-blue,.tile.b-purple{color:#fff}
+.tile.b-orange,.tile.b-pink,.tile.b-green,.tile.b-yellow,.tile.b-cyan{color:var(--dk)}
+
+/* map */
+.world{border:3px solid var(--line);border-radius:24px;background:var(--panel);box-shadow:0 6px 0 var(--line);overflow:hidden}
+.world+.world{margin-top:18px}
+.world.locked{opacity:.7}
+.wh{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:3px solid var(--line)}
+.wh .em{font-size:2rem;line-height:1}
+.wh h3{color:inherit}
+.wh small{font-weight:700}
+.wh.b-blue,.wh.b-purple{color:#fff}
+.wh.b-orange,.wh.b-pink,.wh.b-green,.wh.b-cyan{color:var(--dk)}
+.wb{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;align-items:stretch}
+.node{flex:1 1 130px;border:3px solid var(--line);border-radius:18px;background:var(--panel2);padding:8px 10px;text-align:center;box-shadow:0 4px 0 var(--line);color:var(--ink)}
+.node:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.node[disabled]{opacity:.55;cursor:not-allowed}
+.node b{display:block;font-family:var(--fd);font-weight:400;font-size:1.05rem}
+.stars{font-size:1.3rem;letter-spacing:2px;color:#e39b00}
+.node .stars{font-size:1.15rem}
+
+/* lesson */
+.lesson h2{margin-bottom:8px}
+.keys{margin:10px 0 0;padding-inline-start:1.3em;padding-left:0}
+.keys li{margin:6px 0}
+.pvt{border-collapse:separate;border-spacing:6px;margin:12px 0}
+.pvt td,.pvt th{border:3px solid var(--line);border-radius:12px;text-align:center;padding:4px 10px;min-width:56px;font-family:var(--fd);font-weight:400}
+.pvt th{background:var(--yellow);color:var(--dk);font-size:.85rem}
+.pvt td{font-size:1.6rem;background:var(--panel2)}
+.pvt td.dot{border:none;background:none;min-width:20px;padding:0;font-size:2rem}
+.stage{border:3px solid var(--line);border-radius:16px;padding:10px 12px;margin-top:12px;background:var(--panel2)}
+.stage.now{background:var(--hi);box-shadow:0 4px 0 var(--line)}
+.stage .say{margin-bottom:6px}
+.calc{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.05rem;line-height:1.7}
+.vert{display:inline-block;padding:6px 8px}
+.vr{white-space:pre;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.35rem;line-height:1.35;text-align:left}
+.vr .sg{display:inline-block;width:1.6ch;color:var(--pink)}
+.vr em{font-style:normal;color:var(--orange)}
+.vr u{text-decoration:none;color:var(--purple);background:var(--hi);border-radius:4px}
+.vr.res{border-top:3px solid var(--ink);margin-top:2px}
+.scroll-x{overflow-x:auto;max-width:100%}
+.tips li{margin:6px 0}
+.trap{background:var(--nobg)}
+.trick{background:var(--okbg)}
+.kcf b{padding:0 6px;border-radius:8px;border:2px solid var(--line);color:var(--dk)}
+.kcf .k{background:var(--green)}.kcf .c{background:var(--orange)}.kcf .f{background:var(--pink)}
+svg.area{width:min(260px,80%);height:auto;display:block;margin:8px 0}
+svg.area rect{stroke:var(--line);stroke-width:2}
+.area .c0{fill:var(--panel)}.area .cc{fill:var(--blue);fill-opacity:.55}.area .cr{fill:var(--orange);fill-opacity:.6}.area .cb{fill:var(--green);fill-opacity:.95}
+
+/* fractions */
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .18em;line-height:1.05;font-family:var(--fd);font-weight:400}
+.fr i{font-style:normal;padding:0 .3em}
+.fr i:first-child{border-bottom:.11em solid currentColor}
+.mix{display:inline-flex;align-items:center;gap:.05em;font-family:var(--fd);font-weight:400}
+
+/* quiz */
+.qh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.dots{display:flex;gap:6px;flex:1;min-width:120px}
+.dots span{flex:1;height:12px;border:3px solid var(--line);border-radius:8px;background:var(--panel)}
+.dots span.d{background:var(--green)}.dots span.x{background:var(--red)}.dots span.n{background:var(--yellow)}
+.bar{height:16px;border:3px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;background:var(--orange);width:100%;transition:width .2s linear}
+.qcard{padding:18px}
+.badge{display:inline-block;background:var(--purple);color:#fff;border-radius:999px;padding:0 12px;font-family:var(--fd);font-weight:400;font-size:.9rem;margin-bottom:8px}
+.wp{font-size:1.25rem;line-height:1.45;margin-bottom:6px}
+.expr{font-family:var(--fd);font-weight:400;font-size:clamp(1.7rem,7vw,2.6rem);margin:8px 0 14px}
+.inp{font-size:1.6rem;border:3px solid var(--line);border-radius:14px;padding:8px 12px;background:var(--panel);color:var(--ink);width:min(230px,58vw);text-align:center}
+.fin{display:inline-flex;align-items:center;gap:10px}
+.fin .inp{width:78px;padding:6px 4px}
+.fin .stack{display:flex;flex-direction:column;align-items:center;gap:5px}
+.fin .hr{width:78px;height:5px;background:var(--ink);border-radius:3px}
+.unit{font-size:1.2rem;margin-inline-start:8px}
+.msg{min-height:1.6em;margin:10px 0 0;font-size:1.05rem}
+.msg.warn{color:var(--muted)}
+.fb{border:3px solid var(--line);border-radius:18px;padding:12px 14px;margin-top:6px}
+.fb.ok{background:var(--okbg)}.fb.no{background:var(--nobg)}
+.fb h3{margin-bottom:4px}
+details.steps{margin-top:10px;border:3px solid var(--line);border-radius:14px;background:var(--panel);padding:8px 12px}
+details.steps summary{cursor:pointer;font-family:var(--fd);font-weight:400}
+details.steps ol{padding-inline-start:1.3em;padding-left:0;margin:8px 0 0}
+details.steps li{margin:8px 0}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.pl{display:flex;gap:10px;margin-bottom:12px}
+.pl>div{flex:1;border:3px solid var(--line);border-radius:16px;padding:6px 10px;background:var(--panel);text-align:center}
+.pl>div.on{background:var(--yellow);color:var(--dk);box-shadow:0 4px 0 var(--line)}
+.pl b{font-family:var(--fd);font-weight:400;font-size:1.3rem;display:block}
+.live{list-style:none;padding:0;margin:8px 0 0}
+.live li{display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:2px dashed var(--muted)}
+.live li:last-child{border-bottom:none}
+.rankn{width:1.6em;text-align:center;font-family:var(--fd);font-weight:400}
+
+/* forms */
+label.lb{display:block;margin:12px 0 4px;font-family:var(--fd);font-weight:400}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg .btn{padding:6px 14px;font-size:1rem;box-shadow:0 3px 0 var(--line)}
+.seg .btn.sel{background:var(--yellow);color:var(--dk)}
+.txt{font:inherit;font-weight:700;border:3px solid var(--line);border-radius:14px;padding:8px 12px;background:var(--panel);color:var(--ink);width:100%;max-width:340px}
+.avs{display:flex;gap:8px;flex-wrap:wrap}
+.avs button{font-size:1.7rem;width:52px;height:52px;border:3px solid var(--line);border-radius:14px;background:var(--panel2)}
+.avs button.sel{background:var(--yellow);box-shadow:0 4px 0 var(--line)}
+
+/* trophies */
+.rankbar{height:22px;border:3px solid var(--line);border-radius:12px;background:var(--panel2);overflow:hidden;margin:8px 0}
+.rankbar i{display:block;height:100%;background:var(--green)}
+.trophies{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px}
+.tro{border:3px solid var(--line);border-radius:16px;padding:10px;background:var(--panel2);text-align:center}
+.tro .em{font-size:2rem}
+.tro.off{opacity:.45;filter:grayscale(1)}
+.tro small{display:block;font-weight:700;color:var(--muted)}
+table.lt{width:100%;border-collapse:collapse}
+table.lt td,table.lt th{padding:6px 8px;border-bottom:2px dashed var(--muted);text-align:start}
+table.lt th{font-family:var(--fd);font-weight:400}
+
+/* trivia + fun */
+.opts{display:grid;gap:10px;margin-top:12px}
+.opts .btn{text-align:start}
+.opts .btn.right{background:var(--green);color:var(--dk)}
+.opts .btn.wrong{background:var(--red);color:#fff}
+.joke{font-size:1.3rem}
+
+/* toast + confetti */
+#toast{position:fixed;left:50%;top:12px;transform:translate(-50%,-140%);background:var(--yellow);color:var(--dk);border:3px solid var(--line);border-radius:16px;padding:8px 16px;font-family:var(--fd);box-shadow:0 5px 0 var(--line);z-index:50;transition:transform .25s;max-width:92vw;text-align:center}
+#toast.show{transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:40}
+.cf{position:absolute;width:11px;height:16px;border:2px solid var(--line);border-radius:3px;animation:cf 1.3s ease-out forwards}
+@keyframes cf{to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* language: Arabic / RTL */
+html[lang="ar"] body{line-height:1.6;font-size:18px}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{line-height:1.3}
+.expr,.vert,.calc,.fin,.fr,.mix,.pvt,svg.area,.inp,#ccode,bdi[dir="ltr"]{direction:ltr;unicode-bidi:isolate}
+.expr{text-align:center}
+.calcx{font-size:1.05rem;line-height:1.9}
+.calcx.kcf b{margin-inline:2px}
+html[dir="rtl"] .vr{direction:ltr}
+html[dir="rtl"] .pl b,html[dir="rtl"] .chip{unicode-bidi:plaintext}
+</style>
+</head>
+<body>
+<noscript>Number Arena needs JavaScript to run.</noscript>
+<div id="app"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="fx" aria-hidden="true"></div>
+<script>
+(function(){
+'use strict';
+
+/* ================= utilities ================= */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtN=n=>Number(n||0).toLocaleString('en-US');
+const rid=()=>'p'+Math.random().toString(36).slice(2,10);
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return h>>>0}
+function makeRng(seed){const f=mulberry32(seed);return{int:(a,b)=>a+Math.floor(f()*(b-a+1)),pick:a=>a[Math.floor(f()*a.length)],shuffle:a=>{const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(f()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}}}
+const newRng=()=>makeRng((Math.random()*4294967296)>>>0);
+
+/* ================= storage ================= */
+const mem={};
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return k in mem?mem[k]:d}},
+  set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let DB=store.get('na_db',null);
+if(!DB||!DB.profiles)DB={cur:null,profiles:{},hall:[],prefs:{}};
+DB.prefs=Object.assign({theme:'auto',music:true,sfx:true,teacher:false,code:'',lang:((typeof navigator!=='undefined'&&navigator.language)||'en').slice(0,2)==='ar'?'ar':'en'},DB.prefs||{});
+let P=DB.cur&&DB.profiles[DB.cur]?DB.profiles[DB.cur]:null;
+const save=()=>store.set('na_db',DB);
+const AVATARS=['🤖','⚽','🚀','🦁','🐯','🦅','🐉','🦈','🎮','🏎️','🧠','⚡'];
+function newProfile(name,avatar){const id=rid();DB.profiles[id]={id,name:name.slice(0,16),avatar,points:0,stars:{},badges:[],blitz:0,solved:0,correct:0,seen:{}};DB.cur=id;P=DB.profiles[id];save()}
+function applyTheme(){const t=DB.prefs.theme;if(t==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t)}
+
+/* ================= language ================= */
+const isAr=()=>DB.prefs.lang==='ar';
+const X=(en,ar)=>isAr()?ar:en;
+const li=()=>isAr()?1:0;
+const eq=s=>'<bdi dir="ltr">'+s+'</bdi>';
+function applyLang(){
+  document.documentElement.lang=isAr()?'ar':'en';
+  document.documentElement.dir=isAr()?'rtl':'ltr';
+  document.title=X('Number Arena: Decimals & Fractions','ساحة الأرقام: الأعداد العشرية والكسور');
+}
+/* turn Arabic-Indic / Persian digits and Arabic separators into plain digits */
+const normDigits=s=>String(s==null?'':s).replace(/[\u0660-\u0669]/g,c=>c.charCodeAt(0)-1632).replace(/[\u06F0-\u06F9]/g,c=>c.charCodeAt(0)-1776).replace(/[\u066B\u060C]/g,'.');
+
+/* ================= game data ================= */
+function W(id,n,em,color,op,cat){return{id,em,color,cat,get n(){return n[li()]},get op(){return op[li()]}}}
+const WORLDS=[
+  W('add',['Decimal Docks','ميناء الجمع'],'➕','blue',['Adding decimals','جمع الأعداد العشرية'],'dec'),
+  W('sub',['Subtract Summit','قمة الطرح'],'➖','orange',['Subtracting decimals','طرح الأعداد العشرية'],'dec'),
+  W('mul',['Times Tower','برج الضرب'],'✖️','purple',['Multiplying decimals','ضرب الأعداد العشرية'],'dec'),
+  W('div',['Split Canyon','وادي القسمة'],'➗','pink',['Dividing decimals','قسمة الأعداد العشرية'],'dec'),
+  W('fmul',['Fraction Forge','مصنع الكسور'],'🔨','green',['Multiplying fractions','ضرب الكسور'],'frac'),
+  W('fdiv',['Flip Fortress','حصن المقلوب'],'🏰','cyan',['Dividing fractions','قسمة الكسور'],'frac')
+];
+const LEVELS=[{n:['Rookie','مبتدئ'],mult:1},{n:['Pro','محترف'],mult:1.5},{n:['Legend','أسطورة'],mult:2}];
+const RANKS=[
+  {p:0,n:['Rookie','مبتدئ']},{p:500,n:['Number Ninja','نينجا الأرقام']},{p:1500,n:['Fraction Knight','فارس الكسور']},
+  {p:3500,n:['Decimal Commander','قائد الأعداد العشرية']},{p:7000,n:['Math Legend','أسطورة الرياضيات']}
+];
+function rankOf(pts){let i=0;RANKS.forEach((r,k)=>{if(pts>=r.p)i=k});const cur=RANKS[i],nx=RANKS[i+1];return{cur,nx,pct:nx?Math.round((pts-cur.p)/(nx.p-cur.p)*100):100}}
+const BADGES={
+  first:['🌟',['First Steps','الخطوات الأولى'],['Finish your first level','أنهِ أول مستوى']],
+  streak5:['🔥',['On Fire','مشتعل'],['Get 5 correct in a row','أجب 5 إجابات صحيحة متتالية']],
+  perfect:['💯',['Perfect Score','العلامة الكاملة'],['Get 5 out of 5 in a level','احصل على 5 من 5 في مستوى']],
+  dec:['🧮',['Decimal Master','خبير الأعداد العشرية'],['Pass Level 3 in all 4 decimal worlds','اجتز المستوى 3 في عوالم الأعداد العشرية الأربعة']],
+  frac:['🍕',['Fraction Fighter','مقاتل الكسور'],['Pass Level 3 in both fraction worlds','اجتز المستوى 3 في عالمَي الكسور']],
+  blitz:['⚡',['Speed Demon','سريع البرق'],['Get 10 correct in one Blitz','أجب 10 إجابات صحيحة في تحدي سرعة واحد']],
+  duel:['🥊',['Duel Champ','بطل المنازلة'],['Win a Duel','اربح منازلة']],
+  battle:['🏟️',['Arena Warrior','محارب الساحة'],['Finish a Class Battle','أنهِ معركة الفصل']],
+  trivia:['🧠',['Trivia Whiz','عبقري المعلومات'],['Score 5 out of 5 in Trivia','احصل على 5 من 5 في الأسئلة العامة']],
+  k1:['💰',['1,000 Club','نادي الألف'],['Earn 1,000 points','اجمع 1000 نقطة']]
+};
+const NAMES_L=[
+  ['Omar','Ali','Yusuf','Faisal','Zayd','Miguel','Carlo','Jun','Rafa','Khalid','Adrian','Hamza','Noah','Leo','Ryan'],
+  ['عمر','علي','يوسف','فيصل','زيد','خالد','حمزة','سلمان','ماجد','تركي','نواف','ريان','بدر','سعود','هاشم']
+];
+const TIPS=[
+  ['Line up those decimal points, champ!','رتّب الفواصل العشرية في عمود واحد يا بطل!'],
+  ['Fractions: tops times tops, bottoms times bottoms!','الكسور: البسط × البسط والمقام × المقام!'],
+  ['Keep. Change. Flip. That is the dividing trick!','أبقِ. غيّر. اقلب. هذه حيلة القسمة!'],
+  ['Estimate first. It catches silly mistakes!','قدّر الجواب أولًا. فهذا يكشف الأخطاء الصغيرة!'],
+  ['Zeros at the end of a decimal are free. 3.4 = 3.40!','الأصفار في آخر العدد العشري لا تغيّر قيمته. 3.4 = 3.40!'],
+  ['Multiplying by a number under 1 makes things smaller!','الضرب في عدد أصغر من 1 يجعل الناتج أصغر!'],
+  ['Simplify your fraction to win the full points!','بسّط كسرك لتنال النقاط كاملة!']
+];
+const JOKES_L=[[
+  ['Why was 6 afraid of 7?','Because 7 8 9!'],
+  ['What did the zero say to the eight?','Nice belt!'],
+  ['Why do math books look so sad?','They have too many problems.'],
+  ['Why was the equal sign so humble?','It knew it was not less than or greater than anyone else.'],
+  ['What do you get if you divide a pumpkin\'s circumference by its diameter?','Pumpkin pi!'],
+  ['Why did the two fours skip lunch?','They already 8!'],
+  ['How do you make the number 7 even?','Take away the S.'],
+  ['What do you call friends who love math?','Alge-bros!'],
+  ['Why did 0.5 and 1/2 never argue?','Because they are equal!'],
+  ['Why is a football match like a fraction?','It has two halves, and every goal counts!'],
+  ['What did the calculator say to the student?','You can count on me!'],
+  ['Why did the robot go back to school?','Its skills were getting a little rusty.'],
+  ['What is a computer\'s favorite snack?','Microchips!'],
+  ['What do you call a number that cannot sit still?','A roamin\' numeral!']
+],[
+  ['لماذا كان الصفر حزينًا؟','لأنه يشعر أنه بلا قيمة… حتى وقف بجانب الرقم 1 فصار عشرة!'],
+  ['ماذا قال الكسر 1/2 للعدد 0.5؟','نحن توأمان! شكلنا مختلف لكننا متساويان.'],
+  ['أيهما أكبر: 0.9 أم 0.10؟','0.9، لأنه يساوي 0.90 وهو أكبر من 0.10!'],
+  ['لماذا ذهب الروبوت إلى المدرسة؟','لأن مهاراته بدأت تصدأ!'],
+  ['لماذا كان مدرب كرة القدم ماهرًا في الكسور؟','لأن المباراة شوطان، والشوط نصف!'],
+  ['ماذا قالت الآلة الحاسبة للطالب؟','عوّل عليّ، أنا أحسبها لك!'],
+  ['ما الشيء الذي يزداد كلما وزّعته على الآخرين؟','العلم!'],
+  ['لماذا لا يُحب الرقم 10 أن يقف وحده؟','لأنه كلما وقف بجانب صفر صار أكبر!'],
+  ['لماذا أخذ الطالب سلّمًا إلى حصة الرياضيات؟','لأنه سمع أن المستوى صار أعلى!'],
+  ['ما الشيء الذي كلما أخذت منه كبر؟','الحفرة!'],
+  ['لماذا كان كتاب الرياضيات حزينًا؟','لأن عنده مسائل كثيرة!'],
+  ['ماذا يفعل المعلم عندما يريد أن يقسم البيتزا بالتساوي؟','يستخدم القسمة… ويأخذ أكبر قطعة! 😄']
+]];
+const FACTS_L=[[
+  ['💰','A Saudi riyal is split into 100 halalas, so money is a real-life decimal: 1 riyal = 1.00, half a riyal = 0.50.'],
+  ['🏃','Sprint races are timed to hundredths of a second. Usain Bolt\'s 100 m world record is 9.58 seconds.'],
+  ['📜','The word "fraction" comes from the Latin word fractus, which means "broken".'],
+  ['🇪🇬','Ancient Egyptians wrote fractions about 3,500 years ago. Most of theirs had 1 on top, like 1/2 and 1/3.'],
+  ['🌙','On the Moon you would weigh only about 1/6 of your Earth weight, so you could jump much higher!'],
+  ['☀️','Sunlight takes about 8.3 minutes to travel to Earth. That is a decimal number of minutes!'],
+  ['🧠','The number 0.999... (nines going on forever) is exactly equal to 1.'],
+  ['🥧','Pi is about 3.14159... and never ends or repeats. People celebrate Pi Day on March 14 (3.14).'],
+  ['📏','A ruler in inches uses fractions like 1/2, 1/4, 1/8 and 1/16 for its little marks.'],
+  ['🕌','Around the year 1427, the Persian mathematician Al-Kashi wrote a book explaining decimal fractions clearly.'],
+  ['🔢','The word "algorithm" comes from the name of the mathematician Al-Khwarizmi, who lived in Baghdad about 1,200 years ago.'],
+  ['⚽','A football match lasts 90 minutes. After 45 minutes, exactly 1/2 of the match is done.'],
+  ['💯','The word "percent" means "out of 100", so 25% = 25/100 = 0.25 = 1/4.'],
+  ['🐆','A cheetah can run at about 100 kilometres per hour in short bursts.'],
+  ['🇵🇭','A Philippine peso is split into 100 centavos, just like a riyal is split into 100 halalas.'],
+  ['🔟','Our number system is called "decimal" because it is based on 10. Each place is 10 times bigger than the one to its right.']
+],[
+  ['💰','يُقسَّم الريال السعودي إلى 100 هللة، لذلك النقود مثال حقيقي على الأعداد العشرية: 1 ريال = 1.00 ونصف ريال = 0.50.'],
+  ['🏃','تُقاس سباقات العدو بأجزاء من مئة من الثانية. الرقم القياسي العالمي لأوسين بولت في 100 متر هو 9.58 ثانية.'],
+  ['📜','كلمة «كسر» تأتي من كسر الشيء إلى أجزاء. وكلمة fraction الإنجليزية جاءت من الكلمة اللاتينية fractus ومعناها «مكسور».'],
+  ['🇪🇬','كتب قدماء المصريين الكسور قبل نحو 3500 سنة، وكان معظمها بسطه 1 مثل 1/2 و1/3.'],
+  ['🌙','على القمر يكون وزنك نحو سدس وزنك على الأرض، فتستطيع أن تقفز أعلى بكثير!'],
+  ['☀️','يستغرق ضوء الشمس نحو 8.3 دقائق ليصل إلى الأرض. وهذا عدد عشري من الدقائق!'],
+  ['🧠','العدد 0.999... (تسعات لا تنتهي) يساوي 1 تمامًا.'],
+  ['🥧','العدد π يساوي تقريبًا 3.14159... ولا ينتهي ولا يتكرر. ويحتفل الناس بيوم π في 14 مارس (3.14).'],
+  ['📏','المسطرة بالإنش تستخدم كسورًا مثل 1/2 و1/4 و1/8 و1/16 في علاماتها الصغيرة.'],
+  ['🕌','في حدود عام 1427م شرح عالم الرياضيات الفارسي جمشيد الكاشي الكسور العشرية شرحًا واضحًا في كتابه «مفتاح الحساب».'],
+  ['🔢','كلمة «الخوارزمية» مأخوذة من اسم العالم الخوارزمي الذي عاش في بغداد قبل نحو 1200 سنة.'],
+  ['⚽','تستمر مباراة كرة القدم 90 دقيقة، وبعد 45 دقيقة يكون نصف المباراة قد انتهى.'],
+  ['💯','كلمة «بالمئة» تعني «من كل 100»، فـ 25% = 25/100 = 0.25 = 1/4.'],
+  ['🐆','يستطيع الفهد الجري بسرعة نحو 100 كيلومتر في الساعة لمسافات قصيرة.'],
+  ['🇵🇭','يُقسَّم البيزو الفلبيني إلى 100 سنتافو تمامًا كما يُقسَّم الريال إلى 100 هللة.'],
+  ['🔟','يسمى نظامنا العددي «عشريًا» لأنه مبني على العدد 10؛ فكل منزلة أكبر عشر مرات من المنزلة التي على يمينها.']
+]];
+const TRIVIA_L=[[
+  ['How many halalas make 1 riyal?',['10','50','100','1,000'],2],
+  ['Which is greater?',['0.5','0.45','They are equal','0.05'],0],
+  ['Which fraction equals 0.25?',['1/2','1/4','1/5','2/5'],1],
+  ['The top number of a fraction is called the…',['Denominator','Quotient','Numerator','Decimal'],2],
+  ['What is 1/2 of 1/2?',['1','1/4','1/2','2'],1],
+  ['What is 0.1 × 0.1?',['0.2','0.1','1','0.01'],3],
+  ['Dividing by 1/2 is the same as multiplying by…',['2','1/2','1/4','4'],0],
+  ['Which decimal equals 3/4?',['0.34','0.75','0.25','0.7'],1],
+  ['What is 10 × 0.5?',['0.05','0.5','5','50'],2],
+  ['In a 90-minute match, what fraction is played after 30 minutes?',['1/2','1/3','1/4','2/3'],1],
+  ['Which is the smallest?',['0.3','0.33','0.303','0.03'],3],
+  ['What is 2.5 × 4?',['8','10','12','9.5'],1],
+  ['What is 1 ÷ 0.25?',['4','0.25','2.5','40'],0],
+  ['What is the reciprocal (flip) of 3/5?',['3/5','5/3','−3/5','1/15'],1],
+  ['Which digit is in the hundredths place of 4.567?',['4','5','6','7'],2]
+],[
+  ['كم هللة في الريال الواحد؟',['10','50','100','1000'],2],
+  ['أيهما أكبر؟',['0.5','0.45','متساويان','0.05'],0],
+  ['أي كسر يساوي 0.25؟',['1/2','1/4','1/5','2/5'],1],
+  ['يسمى العدد العلوي في الكسر…',['المقام','ناتج القسمة','البسط','العدد العشري'],2],
+  ['ما هو 1/2 من 1/2؟',['1','1/4','1/2','2'],1],
+  ['ما ناتج 0.1 × 0.1؟',['0.2','0.1','1','0.01'],3],
+  ['القسمة على 1/2 تساوي الضرب في…',['2','1/2','1/4','4'],0],
+  ['أي عدد عشري يساوي 3/4؟',['0.34','0.75','0.25','0.7'],1],
+  ['ما ناتج 10 × 0.5؟',['0.05','0.5','5','50'],2],
+  ['في مباراة مدتها 90 دقيقة، ما الكسر الذي مضى بعد 30 دقيقة؟',['1/2','1/3','1/4','2/3'],1],
+  ['أيها الأصغر؟',['0.3','0.33','0.303','0.03'],3],
+  ['ما ناتج 2.5 × 4؟',['8','10','12','9.5'],1],
+  ['ما ناتج 1 ÷ 0.25؟',['4','0.25','2.5','40'],0],
+  ['ما مقلوب الكسر 3/5؟',['3/5','5/3','−3/5','1/15'],1],
+  ['ما الرقم الموجود في منزلة «الأجزاء من مئة» في العدد 4.567؟',['4','5','6','7'],2]
+]];
+const jokes=()=>JOKES_L[li()];
+const facts=()=>FACTS_L[li()];
+
+/* ================= decimal helpers ================= */
+const dv=(v,p)=>({v,p});
+const P10=n=>Math.pow(10,n);
+function dstr(d){const s=String(Math.abs(d.v)).padStart(d.p+1,'0');return d.p?s.slice(0,-d.p)+'.'+s.slice(-d.p):s}
+function norm(d){let v=d.v,p=d.p;while(p>0&&v%10===0){v/=10;p--}return dv(v,p)}
+function rdec(R,p,lo,hi){let v;do{v=R.int(lo*P10(p),hi*P10(p)-1)}while(p>0&&v%10===0);return dv(v,p)}
+function addD(a,b){const p=Math.max(a.p,b.p);return dv(a.v*P10(p-a.p)+b.v*P10(p-b.p),p)}
+function subD(a,b){const p=Math.max(a.p,b.p);return dv(a.v*P10(p-a.p)-b.v*P10(p-b.p),p)}
+function eqD(a,b){return a.v*P10(b.p)===b.v*P10(a.p)}
+function parseDec(s){s=String(s).trim().replace(',','.');if(!/^(\d+\.?\d*|\.\d+)$/.test(s))return null;const parts=s.split('.');const f=parts[1]||'';if(f.length>6||parts[0].length>9)return null;return dv(parseInt((parts[0]||'0')+f,10),f.length)}
+function vert(nums,op,res,ghost){
+  if(ghost===undefined)ghost=true;
+  const all=res?nums.concat([res]):nums;
+  const Pm=Math.max.apply(null,all.map(d=>d.p));
+  const parts=all.map(d=>{const s=dstr(d).split('.');return{i:s[0],f:s[1]||''}});
+  const IW=Math.max.apply(null,parts.map(x=>x.i.length));
+  const NB='\u00a0';
+  const rows=parts.map((x,k)=>{
+    const isRes=!!res&&k===parts.length-1;
+    const sign=(k===nums.length-1&&!isRes)?op:'';
+    const need=Pm-x.f.length;
+    const dot=Pm>0&&(x.f.length>0||ghost)?'<em>.</em>':NB;
+    const fz=need>0?(ghost?'<u>'+'0'.repeat(need)+'</u>':NB.repeat(need)):'';
+    return '<div class="vr'+(isRes?' res':'')+'"><span class="sg">'+sign+'</span>'+x.i.padStart(IW,NB)+dot+x.f+fz+'</div>';
+  });
+  return '<div class="scroll-x"><div class="vert">'+rows.join('')+'</div></div>';
+}
+
+/* ================= fraction helpers ================= */
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const frac=(n,d)=>{const g=gcd(n,d)||1;return{n:n/g,d:d/g}};
+const frH=(n,d)=>'<span class="fr"><i>'+n+'</i><i>'+d+'</i></span>';
+const impF=f=>f.n===0?{n:f.w,d:1}:{n:f.w*f.d+f.n,d:f.d};
+function showF(f){if(f.n===0)return '<b>'+f.w+'</b>';if(f.w===0)return frH(f.n,f.d);return '<span class="mix"><b>'+f.w+'</b>'+frH(f.n,f.d)+'</span>'}
+function ansH(a){if(a.d===1)return '<b>'+a.n+'</b>';if(a.n>a.d){const w=Math.floor(a.n/a.d),r=a.n%a.d;return r?'<span class="mix"><b>'+w+'</b>'+frH(r,a.d)+'</span>':'<b>'+w+'</b>'}return frH(a.n,a.d)}
+function rFrac(R,dmax){let d,n;do{d=R.int(2,dmax);n=R.int(1,d-1)}while(gcd(n,d)!==1);return{w:0,n,d}}
+function rMix(R,dmax){const f=rFrac(R,dmax);f.w=R.int(1,3);return f}
+const rWhole=(R,a,b)=>({w:R.int(a,b),n:0,d:1});
+
+/* ================= question generators ================= */
+const TT=(ue,ua,fe,fa)=>({u:[ue,ua],t:[fe,fa]});
+const pickName=R=>NAMES_L[li()][R.int(0,14)];
+const ADD2=[
+  TT('km','كم',(n,x)=>n+' ran '+x[0]+' km on Monday and '+x[1]+' km on Tuesday. How many kilometres did he run altogether?',
+    (n,x)=>'ركض '+n+' '+x[0]+' كم يوم الأحد و'+x[1]+' كم يوم الاثنين. كم كيلومترًا ركض في المجموع؟'),
+  TT('SAR','ريال',(n,x)=>n+' bought a football for '+x[0]+' SAR and shin guards for '+x[1]+' SAR. How much did he pay in all?',
+    (n,x)=>'اشترى '+n+' كرة قدم بسعر '+x[0]+' ريال وواقيًا للساق بسعر '+x[1]+' ريال. كم دفع في المجموع؟'),
+  TT('points','نقطة',(n,x)=>n+' scored '+x[0]+' points in Round 1 of a video game and '+x[1]+' points in Round 2. What is his total score?',
+    (n,x)=>'حصل '+n+' على '+x[0]+' نقطة في الجولة الأولى من لعبة فيديو و'+x[1]+' نقطة في الجولة الثانية. ما مجموع نقاطه؟'),
+  TT('m','م',(n,x)=>'A robot arm is '+x[0]+' m long. '+n+' adds an extension of '+x[1]+' m. How long is the arm now?',
+    (n,x)=>'طول ذراع الروبوت '+x[0]+' م. أضاف '+n+' امتدادًا طوله '+x[1]+' م. كم صار طول الذراع الآن؟'),
+  TT('kg','كجم',(n,x)=>n+' packed '+x[0]+' kg of dates and '+x[1]+' kg of nuts for a hike. What is the total mass of the snacks?',
+    (n,x)=>'حزم '+n+' '+x[0]+' كجم من التمر و'+x[1]+' كجم من المكسرات لرحلة. كم الكتلة الكلية للوجبات الخفيفة؟')
+];
+const ADD3=[
+  TT('SAR','ريال',(n,x)=>n+' bought a jersey for '+x[0]+' SAR, boots for '+x[1]+' SAR and a water bottle for '+x[2]+' SAR. How much did he spend altogether?',
+    (n,x)=>'اشترى '+n+' قميصًا بسعر '+x[0]+' ريال وحذاءً بسعر '+x[1]+' ريال وزجاجة ماء بسعر '+x[2]+' ريال. كم أنفق في المجموع؟'),
+  TT('km','كم',(n,x)=>'On a three-day bike trip, '+n+' rode '+x[0]+' km, '+x[1]+' km and '+x[2]+' km. How far did he ride in total?',
+    (n,x)=>'في رحلة دراجات لثلاثة أيام، قطع '+n+' '+x[0]+' كم ثم '+x[1]+' كم ثم '+x[2]+' كم. كم قطع في المجموع؟'),
+  TT('L','لتر',(n,x)=>'A science-lab tank is filled with '+x[0]+' L, then '+x[1]+' L, then '+x[2]+' L of water. How many litres are in the tank?',
+    (n,x)=>'يُملأ خزان في المختبر بـ '+x[0]+' لتر ثم '+x[1]+' لتر ثم '+x[2]+' لتر من الماء. كم لترًا في الخزان؟')
+];
+function genAdd(R,lv,word){
+  let nums;
+  if(lv===1)nums=[rdec(R,1,1,9),rdec(R,1,1,9)];
+  else if(lv===2)nums=R.shuffle([rdec(R,1,2,20),rdec(R,2,1,9)]);
+  else if(word&&R.int(0,1))nums=[rdec(R,2,5,40),rdec(R,1,5,30),rdec(R,3,1,9)];
+  else nums=R.shuffle([R.int(0,1)?dv(R.int(5,60),0):rdec(R,2,10,60),rdec(R,R.int(2,3),1,9)]);
+  const ans=nums.reduce((s,x)=>addD(s,x));
+  const strs=nums.map(dstr);
+  const q={kind:'dec',ans:norm(ans),unit:'',dbg:{op:'+',nums}};
+  if(word){const t=R.pick(nums.length===2?ADD2:ADD3);q.text=t.t[li()](pickName(R),strs);q.unit=t.u[li()]}
+  else q.expr=strs.join(' + ')+' = ?';
+  q.hint=word?X('Words like <b>altogether</b>, <b>in all</b> and <b>total</b> mean ADD. Line up the decimal points!','كلمات مثل <b>المجموع</b> و<b>في المجموع</b> و<b>الكلية</b> تعني اجمع. ضع الفواصل العشرية في عمود واحد!')
+    :X('Line up the decimal points (add zeros as place holders), then add column by column.','ضع الفواصل العشرية في عمود واحد (وأضف أصفارًا في الخانات الفارغة)، ثم اجمع عمودًا عمودًا.');
+  q.steps=[X('Stack the numbers and line up the <b>decimal points</b>. Fill empty places with zeros.','اكتب الأعداد فوق بعضها وضع <b>الفواصل العشرية</b> في عمود واحد. املأ الخانات الفارغة بأصفار.')+vert(nums,'+'),
+    X('Add column by column from the right. Carry 1 to the next column when a column makes 10 or more.','اجمع عمودًا عمودًا من اليمين. احمل 1 إلى العمود التالي عندما يبلغ العمود 10 أو أكثر.'),
+    X('Bring the decimal point straight down. The answer is <b>'+dstr(q.ans)+'</b>.','أنزل الفاصلة العشرية مباشرة إلى الأسفل. الجواب هو <b>'+dstr(q.ans)+'</b>.')+vert(nums,'+',ans)];
+  return q;
+}
+const SUB2=[
+  TT('SAR','ريال',(n,x)=>n+' has '+x[0]+' SAR and buys a game-controller cover for '+x[1]+' SAR. How much money does he have left?',
+    (n,x)=>'مع '+n+' مبلغ '+x[0]+' ريال، فاشترى غطاءً لذراع التحكم بسعر '+x[1]+' ريال. كم بقي معه من المال؟'),
+  TT('m','م',(n,x)=>'A rope is '+x[0]+' m long. '+n+' cuts off '+x[1]+' m for a tug-of-war game. How long is the rope now?',
+    (n,x)=>'حبل طوله '+x[0]+' م. قصّ '+n+' منه '+x[1]+' م للعبة شد الحبل. كم صار طول الحبل؟'),
+  TT('seconds','ثانية',(n,x)=>n+' ran 100 m in '+x[0]+' seconds and his friend ran it in '+x[1]+' seconds. How many seconds faster was his friend?',
+    (n,x)=>'ركض '+n+' مسافة 100 م في '+x[0]+' ثانية وركضها صديقه في '+x[1]+' ثانية. بكم ثانية كان صديقه أسرع؟'),
+  TT('L','لتر',(n,x)=>'A water tank holds '+x[0]+' L. '+n+' uses '+x[1]+' L to water the school garden. How much water is left?',
+    (n,x)=>'يتسع خزان الماء لـ '+x[0]+' لتر. استخدم '+n+' '+x[1]+' لتر لسقي حديقة المدرسة. كم لترًا بقي؟'),
+  TT('kg','كجم',(n,x)=>n+' carried '+x[0]+' kg of equipment to the field and gave '+x[1]+' kg to a teammate. How much is he still carrying?',
+    (n,x)=>'حمل '+n+' '+x[0]+' كجم من المعدات إلى الملعب ثم أعطى زميله '+x[1]+' كجم. كم كجم ما زال يحمل؟')
+];
+const SUB3=[
+  TT('SAR','ريال',(n,x)=>n+' had '+x[0]+' SAR. He spent '+x[1]+' SAR on a snack and '+x[2]+' SAR on a drink. How much money is left?',
+    (n,x)=>'كان مع '+n+' مبلغ '+x[0]+' ريال. أنفق '+x[1]+' ريال على وجبة خفيفة و'+x[2]+' ريال على مشروب. كم بقي معه؟'),
+  TT('L','لتر',(n,x)=>'A tank holds '+x[0]+' L. A robot pours out '+x[1]+' L, then another '+x[2]+' L. How many litres are left in the tank?',
+    (n,x)=>'يتسع خزان لـ '+x[0]+' لتر. سكب روبوت '+x[1]+' لتر ثم '+x[2]+' لتر أخرى. كم لترًا بقي في الخزان؟')
+];
+function genSub(R,lv,word){
+  let nums;
+  if(lv===1)nums=[rdec(R,1,6,20),rdec(R,1,1,5)];
+  else if(lv===2)nums=[rdec(R,R.int(1,2),10,50),rdec(R,2,1,9)];
+  else if(word&&R.int(0,1))nums=[R.int(0,1)?dv(R.int(30,90),0):rdec(R,1,40,90),rdec(R,2,1,9),rdec(R,1,1,9)];
+  else nums=[R.int(0,1)?dv(R.int(10,60),0):rdec(R,2,20,99),rdec(R,R.int(2,3),1,9)];
+  const ans=nums.reduce((s,x)=>subD(s,x));
+  const strs=nums.map(dstr);
+  const q={kind:'dec',ans:norm(ans),unit:'',dbg:{op:'-',nums}};
+  if(word){const t=R.pick(nums.length===2?SUB2:SUB3);q.text=t.t[li()](pickName(R),strs);q.unit=t.u[li()]}
+  else q.expr=strs.join(' − ')+' = ?';
+  q.hint=word?X('Words like <b>left</b>, <b>remaining</b> and <b>how much faster</b> mean SUBTRACT. Big number on top!','كلمات مثل <b>بقي</b> و<b>الباقي</b> و<b>بكم أسرع</b> تعني اطرح. العدد الأكبر في الأعلى!')
+    :X('Put the bigger number on top, line up the decimal points, add zeros, then subtract from the right.','ضع العدد الأكبر في الأعلى، وحاذِ الفواصل العشرية، وأضف أصفارًا، ثم اطرح من اليمين.');
+  if(nums.length===2){
+    q.steps=[X('Stack the numbers with the bigger one on top and line up the <b>decimal points</b>. Fill empty places with zeros.','اكتب العدد الأكبر في الأعلى وضع <b>الفواصل العشرية</b> في عمود واحد. املأ الخانات الفارغة بأصفار.')+vert(nums,'−'),
+      X('Subtract column by column from the right. If a top digit is too small, borrow 1 from the column on its left.','اطرح عمودًا عمودًا من اليمين. إذا كان الرقم العلوي أصغر فاستلف 1 من العمود الذي على يساره.'),
+      X('Bring the decimal point straight down: <b>'+dstr(q.ans)+'</b>.','أنزل الفاصلة العشرية مباشرة إلى الأسفل: <b>'+dstr(q.ans)+'</b>.')+vert(nums,'−',ans),
+      X('Check by adding: ','تحقق بالجمع: ')+eq(dstr(q.ans)+' + '+dstr(nums[1])+' = '+dstr(nums[0]))+'.'];
+  }else{
+    const r1=subD(nums[0],nums[1]);
+    q.steps=[X('Subtract in two steps. First: ','اطرح على خطوتين. أولًا: ')+eq(dstr(nums[0])+' − '+dstr(nums[1]))+'.'+vert([nums[0],nums[1]],'−',r1),
+      X('Then take away the last number: ','ثم اطرح العدد الأخير: ')+eq(dstr(r1)+' − '+dstr(nums[2]))+'.'+vert([r1,nums[2]],'−',ans),
+      X('The answer is <b>'+dstr(q.ans)+'</b>.','الجواب هو <b>'+dstr(q.ans)+'</b>.')];
+  }
+  return q;
+}
+const MULW=[
+  TT('kg','كجم',(n,a,b)=>'One pack of dates weighs '+a+' kg. '+n+' buys '+b+' packs. What is the total mass in kilograms?',
+    (n,a,b)=>'تزن علبة التمر الواحدة '+a+' كجم. اشترى '+n+' '+b+' علب. ما الكتلة الكلية بالكيلوجرام؟'),
+  TT('km','كم',(n,a,b)=>'One lap of a running track is '+a+' km. '+n+' runs '+b+' laps. How many kilometres does he run?',
+    (n,a,b)=>'الدورة الواحدة في مضمار الجري '+a+' كم. ركض '+n+' '+b+' دورات. كم كيلومترًا ركض؟'),
+  TT('SAR','ريال',(n,a,b)=>'A ticket to a football match costs '+a+' SAR. '+n+' buys '+b+' tickets for his team. How much do the tickets cost altogether?',
+    (n,a,b)=>'سعر تذكرة مباراة كرة القدم '+a+' ريال. اشترى '+n+' '+b+' تذاكر لفريقه. كم تكلفة التذاكر كلها؟')
+];
+const MULD=[
+  TT('SAR','ريال',(n,a,b)=>'Oranges cost '+a+' SAR per kilogram. '+n+' buys '+b+' kg. How much does he pay?',
+    (n,a,b)=>'سعر الكيلوجرام الواحد من البرتقال '+a+' ريال. اشترى '+n+' '+b+' كجم. كم دفع؟'),
+  TT('m','م',(n,a,b)=>'A remote-control car travels '+a+' m every second. How far does it go in '+b+' seconds?',
+    (n,a,b)=>'تسير سيارة التحكم عن بعد '+a+' م كل ثانية. كم تقطع في '+b+' ثانية؟')
+];
+const MULA=TT('m²','م²',(n,a,b)=>'A rectangular game board is '+a+' m long and '+b+' m wide. What is its area in square metres?',
+  (n,a,b)=>'لوحة لعبة مستطيلة طولها '+a+' م وعرضها '+b+' م. ما مساحتها بالمتر المربع؟');
+function genMul(R,lv,word){
+  let a,b;
+  if(lv===1){a=rdec(R,1,1,9);b=dv(R.int(2,9),0)}
+  else if(lv===2){const t=R.int(0,2);if(t===0){a=rdec(R,1,1,9);b=rdec(R,1,1,9)}else if(t===1){a=rdec(R,2,1,9);b=dv(R.int(3,12),0)}else{a=rdec(R,1,0,1);b=rdec(R,1,1,9)}}
+  else{const t=R.int(0,2);if(t===0){a=rdec(R,2,1,9);b=rdec(R,1,1,9)}else if(t===1){a=rdec(R,2,0,1);b=rdec(R,1,0,1)}else{a=rdec(R,1,2,15);b=rdec(R,2,1,9)}}
+  const prod=dv(a.v*b.v,a.p+b.p);
+  const q={kind:'dec',ans:norm(prod),unit:'',dbg:{op:'*',nums:[a,b]}};
+  const both1=a.v<P10(a.p)&&b.p>0&&b.v<P10(b.p);
+  if(word){
+    const t=b.p===0?R.pick(MULW):both1?MULA:R.pick(MULD);
+    q.text=t.t[li()](pickName(R),dstr(a),dstr(b));q.unit=t.u[li()];
+  }else q.expr=dstr(a)+' × '+dstr(b)+' = ?';
+  q.hint=word?X('Words like <b>each</b>, <b>per</b>, <b>area</b> and <b>times</b> point to MULTIPLY. Ignore the points first, then count decimal places.','كلمات مثل <b>كل</b> و<b>سعر الكيلوجرام</b> و<b>المساحة</b> تشير إلى الضرب. أهمل الفواصل أولًا ثم عُدّ المنازل العشرية.')
+    :X('Multiply like whole numbers, then count the decimal places in both numbers.','اضرب كأنها أعداد صحيحة، ثم عُدّ المنازل العشرية في العددين.');
+  const ra=Math.round(a.v/P10(a.p)),rb=Math.round(b.v/P10(b.p));
+  const est=(a.v/P10(a.p)>=1&&b.v/P10(b.p)>=1)?X('Sense check: about '+ra+' × '+rb+' = '+(ra*rb)+', so the answer should be close to that.','فحص سريع: تقريبًا '+eq(ra+' × '+rb+' = '+(ra*rb))+'، فيجب أن يكون الجواب قريبًا من ذلك.')
+    :X('Sense check: multiplying by a number smaller than 1 makes the answer smaller.','فحص سريع: الضرب في عدد أصغر من 1 يجعل الناتج أصغر.');
+  const k=a.p+b.p;
+  q.steps=[X('Ignore the decimal points and multiply like whole numbers: <b>'+a.v+' × '+b.v+' = '+(a.v*b.v)+'</b>.','أهمل الفواصل العشرية واضرب كأنها أعداد صحيحة: <b>'+eq(a.v+' × '+b.v+' = '+(a.v*b.v))+'</b>.'),
+    X('Count the decimal places: '+dstr(a)+' has <b>'+a.p+'</b> and '+dstr(b)+' has <b>'+b.p+'</b>, so <b>'+k+'</b> altogether.','عُدّ المنازل العشرية: في '+eq(dstr(a))+' عدد <b>'+a.p+'</b> وفي '+eq(dstr(b))+' عدد <b>'+b.p+'</b>، فالمجموع <b>'+k+'</b>.'),
+    X('Start at the right end of '+(a.v*b.v)+' and move the point '+k+' place'+(k===1?'':'s')+' to the left (add zeros in front if you need them): <b>'+dstr(prod)+'</b>'+(q.ans.p!==prod.p?', which is <b>'+dstr(q.ans)+'</b> without the extra zero.':'.'),
+      'ابدأ من يمين '+eq(String(a.v*b.v))+' وحرّك الفاصلة '+k+' من المنازل إلى اليسار (وأضف أصفارًا في المقدمة إذا احتجت): <b>'+dstr(prod)+'</b>'+(q.ans.p!==prod.p?'، أي <b>'+dstr(q.ans)+'</b> بدون الصفر الزائد.':'.')),
+    est];
+  return q;
+}
+const DIVW=[
+  TT('m','م',(n,N,D)=>n+' has '+N+' m of rope and cuts it into '+D+' equal pieces. How long is each piece in metres?',
+    (n,N,D)=>'مع '+n+' حبل طوله '+N+' م، فقطعه إلى '+D+' قطع متساوية. كم مترًا طول كل قطعة؟'),
+  TT('L','لتر',(n,N,D)=>'A '+N+' L jug of juice is poured equally into '+D+' cups. How many litres go into each cup?',
+    (n,N,D)=>'إبريق عصير سعته '+N+' لتر يُصب بالتساوي في '+D+' أكواب. كم لترًا في كل كوب؟'),
+  TT('SAR','ريال',(n,N,D)=>'A pack of '+D+' sports notebooks costs '+N+' SAR. What is the price of one notebook?',
+    (n,N,D)=>'عبوة فيها '+D+' دفاتر رياضية ثمنها '+N+' ريال. كم ثمن الدفتر الواحد؟'),
+  TT('kg','كجم',(n,N,D)=>N+' kg of dates are shared equally among '+D+' boxes. How many kilograms are in each box?',
+    (n,N,D)=>'تُوزَّع '+N+' كجم من التمر بالتساوي على '+D+' علب. كم كجم في كل علبة؟')
+];
+const DIVD=[
+  TT('pieces','قطعة',(n,N,D)=>'A ribbon is '+N+' m long. '+n+' cuts it into pieces that are each '+D+' m long. How many pieces does he get?',
+    (n,N,D)=>'شريط طوله '+N+' م. قصّه '+n+' إلى قطع طول كل منها '+D+' م. كم قطعة حصل عليها؟'),
+  TT('tokens','عملة',(n,N,D)=>n+' has '+N+' SAR to spend at the arcade. Each token costs '+D+' SAR. How many tokens can he buy?',
+    (n,N,D)=>'مع '+n+' مبلغ '+N+' ريال لينفقه في صالة الألعاب. سعر العملة الواحدة '+D+' ريال. كم عملة يستطيع أن يشتري؟'),
+  TT('cups','كوب',(n,N,D)=>'A jug holds '+N+' L of water. Each cup holds '+D+' L. How many cups can be filled?',
+    (n,N,D)=>'إبريق سعته '+N+' لتر من الماء، وكل كوب يتسع لـ '+D+' لتر. كم كوبًا يمكن ملؤه؟')
+];
+function shiftD(N,k){return N.p>=k?dv(N.v,N.p-k):dv(N.v*P10(k-N.p),0)}
+function genDiv(R,lv,word){
+  let D,Q;
+  if(lv===1){D=dv(R.int(2,9),0);Q=rdec(R,1,1,9)}
+  else if(lv===2){if(R.int(0,1)){D=dv(R.int(2,9),1);Q=dv(R.int(3,40),0)}else{D=dv(R.int(3,9),0);Q=rdec(R,R.int(1,2),1,9)}}
+  else{const t=word?R.int(0,1):R.int(0,2);
+    if(t===0){D=dv(R.pick([4,5,8,12,15,25,35,75]),2);Q=dv(R.int(4,60),0)}
+    else if(t===1){D=dv(R.int(3,12),0);Q=rdec(R,2,1,20)}
+    else{D=dv(R.pick([4,5,8,12,15,25]),2);Q=rdec(R,1,1,9)}}
+  const N=norm(dv(D.v*Q.v,D.p+Q.p));
+  const q={kind:'dec',ans:norm(Q),unit:'',dbg:{op:'/',nums:[N,D]}};
+  if(word){const t=R.pick(D.p===0?DIVW:DIVD);q.text=t.t[li()](pickName(R),dstr(N),dstr(D));q.unit=t.u[li()]}
+  else q.expr=dstr(N)+' ÷ '+dstr(D)+' = ?';
+  q.hint=word?X('<b>Shared equally</b> or <b>how many fit</b> means DIVIDE. Make the divisor a whole number first!','<b>بالتساوي</b> أو <b>كم مرة يتسع</b> تعني اقسم. اجعل المقسوم عليه عددًا صحيحًا أولًا!')
+    :X('If the divisor has a decimal point, move it to the right until it is whole. Move the dividend\'s point the same number of places.','إذا كان في المقسوم عليه فاصلة فحرّكها يمينًا حتى يصير عددًا صحيحًا، وحرّك فاصلة المقسوم بالعدد نفسه من المنازل.');
+  const k=D.p,S2=shiftD(N,k);
+  q.steps=[k>0?X('Make the divisor a whole number. Move the point in <b>'+dstr(D)+'</b> '+k+' place'+(k>1?'s':'')+' to the right: <b>'+D.v+'</b>.','اجعل المقسوم عليه عددًا صحيحًا. حرّك الفاصلة في <b>'+dstr(D)+'</b> '+k+' من المنازل إلى اليمين: <b>'+D.v+'</b>.')
+      :X('The divisor <b>'+D.v+'</b> is already a whole number, so no shifting is needed.','المقسوم عليه <b>'+D.v+'</b> عدد صحيح بالفعل، فلا حاجة إلى تحريك الفاصلة.'),
+    k>0?X('Do the SAME move to the dividend: '+dstr(N)+' becomes <b>'+dstr(S2)+'</b>.','افعل الشيء نفسه بالمقسوم: '+eq(dstr(N))+' يصير <b>'+dstr(S2)+'</b>.')
+      :X('Keep the decimal point in the answer directly above the decimal point in '+dstr(N)+'.','ضع الفاصلة في ناتج القسمة مباشرة فوق فاصلة '+eq(dstr(N))+'.'),
+    X('Divide as usual: '+dstr(S2)+' ÷ '+D.v+' = <b>'+dstr(q.ans)+'</b>.','اقسم كالمعتاد: '+eq(dstr(S2)+' ÷ '+D.v+' = <b>'+dstr(q.ans)+'</b>')+'.'),
+    X('Check by multiplying: ','تحقق بالضرب: ')+eq(dstr(q.ans)+' × '+dstr(D)+' = '+dstr(N))+'.'];
+  return q;
+}
+/* fractions */
+const FM_W=[
+  TT('hours','ساعة',(n,w,f)=>'A football training session lasts '+w+' hours. '+n+' spends '+f+' of that time on passing drills. How many hours is that?',
+    (n,w,f)=>'تستمر حصة تدريب كرة القدم '+w+' ساعة. قضى '+n+' '+f+' من الوقت في تمارين التمرير. كم ساعة هذا؟'),
+  TT('litres','لتر',(n,w,f)=>'A tank holds '+w+' litres. It is '+f+' full. How many litres of water are in it?',
+    (n,w,f)=>'يتسع خزان لـ '+w+' لتر، وهو ممتلئ بمقدار '+f+'. كم لترًا من الماء فيه؟'),
+  TT('m','م',(n,w,f)=>n+' has '+w+' metres of rope and uses '+f+' of it for a tug-of-war. How many metres does he use?',
+    (n,w,f)=>'مع '+n+' حبل طوله '+w+' م، واستخدم '+f+' منه للعبة شد الحبل. كم مترًا استخدم؟')
+];
+const FM_PP=[
+  TT('','',(n,a,b)=>'A pizza has '+a+' of it left. '+n+' eats '+b+' of what is left. What fraction of the whole pizza did he eat?',
+    (n,a,b)=>'بقي '+a+' من البيتزا. أكل '+n+' '+b+' من الباقي. ما الكسر الذي أكله من البيتزا كلها؟'),
+  TT('','',(n,a,b)=>'A tank is '+a+' full. '+b+' of the water is used for the garden. What fraction of the whole tank was used?',
+    (n,a,b)=>'خزان ممتلئ بمقدار '+a+'. استُخدم '+b+' من الماء لسقي الحديقة. ما الكسر المستخدم من الخزان كله؟')
+];
+const FM_ANY=[
+  TT('cups','كوب',(n,a,b)=>'A recipe needs '+a+' cups of sugar. '+n+' makes '+b+' of the recipe. How many cups of sugar does he need?',
+    (n,a,b)=>'تحتاج الوصفة إلى '+a+' كوب من السكر. صنع '+n+' '+b+' من الوصفة. كم كوبًا من السكر يحتاج؟'),
+  TT('m','م',(n,a,b)=>'A robot walks '+a+' m every minute. How far does it walk in '+b+' minutes?',
+    (n,a,b)=>'يمشي روبوت '+a+' م كل دقيقة. كم مترًا يمشي في '+b+' دقيقة؟'),
+  TT('kg','كجم',(n,a,b)=>'One bag of dates weighs '+a+' kg. '+n+' buys '+b+' bags. How many kilograms does he buy?',
+    (n,a,b)=>'يزن كيس التمر الواحد '+a+' كجم. اشترى '+n+' '+b+' أكياس. كم كجم اشترى؟'),
+  TT('m','م',(n,a,b)=>'A plank is '+a+' m long. '+n+' needs '+b+' of it. How long is that piece in metres?',
+    (n,a,b)=>'طول لوح خشبي '+a+' م. يحتاج '+n+' إلى '+b+' منه. كم طول القطعة بالمتر؟')
+];
+function fracSteps(fs,im,N,Dn,ans,div){
+  const s=[];
+  const mixed=fs.filter(f=>f.w&&f.n);
+  if(mixed.length)s.push(X('Change each mixed number into an improper fraction: ','حوّل كل عدد كسري إلى كسر غير فعلي: ')+mixed.map(f=>showF(f)+' = '+frH(impF(f).n,impF(f).d)).join(X(' and ',' و '))+'.');
+  const whole=fs.filter(f=>f.n===0);
+  if(whole.length)s.push(X('Write each whole number over 1: ','اكتب كل عدد صحيح فوق 1: ')+whole.map(f=>f.w+' = '+frH(f.w,1)).join(X(' and ',' و '))+'.');
+  if(div){
+    s.push('<span class="kcf">'+X('<b class="k">Keep</b> '+frH(im[0].n,im[0].d)+' &nbsp;<b class="c">Change</b> ÷ to × &nbsp;<b class="f">Flip</b> '+frH(im[1].n,im[1].d)+' to '+frH(im[1].d,im[1].n)+'.',
+      '<b class="k">أبقِ</b> '+frH(im[0].n,im[0].d)+' &nbsp;<b class="c">غيّر</b> القسمة إلى ضرب &nbsp;<b class="f">اقلب</b> '+frH(im[1].n,im[1].d)+' ليصير '+frH(im[1].d,im[1].n)+'.')+'</span><div class="calc">'+frH(im[0].n,im[0].d)+' × '+frH(im[1].d,im[1].n)+'</div>');
+    s.push(X('Multiply the tops: '+im[0].n+' × '+im[1].d+' = '+N+'. Multiply the bottoms: '+im[0].d+' × '+im[1].n+' = '+Dn+'. That gives '+frH(N,Dn)+'.',
+      'اضرب البسطين: '+eq(im[0].n+' × '+im[1].d+' = '+N)+'. واضرب المقامين: '+eq(im[0].d+' × '+im[1].n+' = '+Dn)+'. فيصير الناتج '+frH(N,Dn)+'.'));
+  }else{
+    s.push(X('Multiply the tops: '+im[0].n+' × '+im[1].n+' = '+N+'. Multiply the bottoms: '+im[0].d+' × '+im[1].d+' = '+Dn+'. That gives '+frH(N,Dn)+'.',
+      'اضرب البسطين: '+eq(im[0].n+' × '+im[1].n+' = '+N)+'. واضرب المقامين: '+eq(im[0].d+' × '+im[1].d+' = '+Dn)+'. فيصير الناتج '+frH(N,Dn)+'.'));
+  }
+  const g=gcd(N,Dn);
+  if(g>1)s.push(X('Simplify: divide the top and the bottom by '+(div?'':'their greatest common factor, ')+g+'. You get '+frH(ans.n,ans.d)+'.','بسّط: اقسم البسط والمقام على '+(div?'':'العامل المشترك الأكبر وهو ')+g+'، فتحصل على '+frH(ans.n,ans.d)+'.'));
+  if(ans.d>1&&ans.n>ans.d)s.push(X('As a mixed number, the answer is '+ansH(ans)+'. (Either form is correct.)','وكعدد كسري يكون الجواب '+ansH(ans)+'. (كلا الشكلين صحيح.)'));
+  else s.push(X('The answer is '+ansH(ans)+'.','الجواب هو '+ansH(ans)+'.'));
+  return s;
+}
+function genFMul(R,lv,word){
+  let fs;
+  if(lv===1){if(R.int(0,1)){const f=rFrac(R,8);fs=R.shuffle([f,{w:f.d*R.int(1,4),n:0,d:1}])}else fs=[rFrac(R,5),rFrac(R,5)]}
+  else if(lv===2){fs=R.int(0,1)?[rFrac(R,9),rFrac(R,9)]:R.shuffle([rWhole(R,2,9),rFrac(R,7)])}
+  else{const t=R.int(0,2);fs=t===0?[rMix(R,5),rFrac(R,6)]:t===1?[rMix(R,4),rMix(R,5)]:[rMix(R,4),rWhole(R,2,6)]}
+  const im=fs.map(impF);
+  const N=im[0].n*im[1].n,Dn=im[0].d*im[1].d;
+  const ans=frac(N,Dn);
+  const q={kind:'frac',ans,unit:'',dbg:{op:'fm',im}};
+  if(word){
+    const wi=fs.findIndex(f=>f.n===0);
+    if(wi>=0){const t=R.pick(FM_W);q.text=t.t[li()](pickName(R),showF(fs[wi]),showF(fs[1-wi]));q.unit=t.u[li()]}
+    else{const bothProper=fs.every(f=>f.w===0);const t=R.pick(bothProper?FM_PP.concat(FM_ANY):FM_ANY);q.text=t.t[li()](pickName(R),showF(fs[0]),showF(fs[1]));q.unit=t.u[li()]}
+  }else q.expr=showF(fs[0])+' × '+showF(fs[1])+' = ?';
+  q.hint=word?X('The word <b>of</b> means MULTIPLY. Turn mixed numbers into improper fractions, then tops × tops and bottoms × bottoms.','كلمة <b>من</b> تعني الضرب. حوّل الأعداد الكسرية إلى كسور غير فعلية، ثم اضرب البسط في البسط والمقام في المقام.')
+    :X('Tops × tops, bottoms × bottoms. Look for a top and a bottom you can cancel first, then simplify!','البسط × البسط والمقام × المقام. ابحث عن بسط ومقام يمكن اختصارهما أولًا ثم بسّط!');
+  q.steps=fracSteps(fs,im,N,Dn,ans,false);
+  return q;
+}
+const FD_WF=[
+  TT('bags','كيس',(n,a,b)=>n+' has '+a+' kg of dates and packs them into bags that each hold '+b+' kg. How many bags can he fill?',
+    (n,a,b)=>'مع '+n+' '+a+' كجم من التمر يعبئها في أكياس يتسع كل منها '+b+' كجم. كم كيسًا يستطيع أن يملأ؟'),
+  TT('pieces','قطعة',(n,a,b)=>'A '+a+' m rope is cut into pieces that are each '+b+' m long. How many pieces are there?',
+    (n,a,b)=>'حبل طوله '+a+' م يُقصّ إلى قطع طول كل منها '+b+' م. كم قطعة نحصل عليها؟'),
+  TT('cups','كوب',(n,a,b)=>n+' has '+a+' litres of juice. Each cup holds '+b+' litres. How many cups can he fill?',
+    (n,a,b)=>'مع '+n+' '+a+' لتر من العصير، وكل كوب يتسع لـ '+b+' لتر. كم كوبًا يستطيع أن يملأ؟')
+];
+const FD_FW=[
+  TT('','',(n,a,b)=>a+' of a pizza is shared equally among '+b+' friends. What fraction of the whole pizza does each friend get?',
+    (n,a,b)=>'يُقسَّم '+a+' من البيتزا بالتساوي بين '+b+' أصدقاء. ما الكسر الذي يناله كل صديق من البيتزا كلها؟'),
+  TT('litres','لتر',(n,a,b)=>'A bottle has '+a+' litre of juice. '+n+' pours it equally into '+b+' cups. How many litres are in each cup?',
+    (n,a,b)=>'في زجاجة '+a+' لتر من العصير. صبّها '+n+' بالتساوي في '+b+' أكواب. كم لترًا في كل كوب؟'),
+  TT('kg','كجم',(n,a,b)=>n+' has '+a+' kg of nails to put equally into '+b+' small boxes. How many kilograms go in each box?',
+    (n,a,b)=>'مع '+n+' '+a+' كجم من المسامير يضعها بالتساوي في '+b+' علب صغيرة. كم كجم في كل علبة؟')
+];
+const FD_FF=[
+  TT('pieces','قطعة',(n,a,b)=>'A ribbon is '+a+' m long. '+n+' cuts pieces that are each '+b+' m long. How many pieces can he cut?',
+    (n,a,b)=>'شريط طوله '+a+' م. قصّ '+n+' منه قطعًا طول كل منها '+b+' م. كم قطعة يستطيع أن يقص؟'),
+  TT('minutes','دقيقة',(n,a,b)=>'A tank has '+a+' litres of water. A sprinkler uses '+b+' litres every minute. For how many minutes can it run?',
+    (n,a,b)=>'في خزان '+a+' لتر من الماء. يستهلك رشاش '+b+' لتر كل دقيقة. كم دقيقة يستطيع أن يعمل؟'),
+  TT('bags','كيس',(n,a,b)=>n+' has '+a+' kg of rice. He packs it into small bags of '+b+' kg each. How many bags can he fill?',
+    (n,a,b)=>'مع '+n+' '+a+' كجم من الأرز يعبئها في أكياس صغيرة، في كل كيس '+b+' كجم. كم كيسًا يستطيع أن يملأ؟')
+];
+function genFDiv(R,lv,word){
+  let fs,type;
+  if(lv===1){if(R.int(0,1)){fs=[rWhole(R,2,6),{w:0,n:1,d:R.int(2,5)}];type='wf'}else{fs=[{w:0,n:1,d:R.int(2,5)},rWhole(R,2,4)];type='fw'}}
+  else if(lv===2){const t=R.int(0,2);
+    if(t===0){let a,b;do{a=rFrac(R,6);b=rFrac(R,6)}while(a.n===b.n&&a.d===b.d);fs=[a,b];type='ff'}
+    else if(t===1){fs=[rWhole(R,2,8),rFrac(R,5)];type='wf'}
+    else{fs=[rFrac(R,6),rWhole(R,2,5)];type='fw'}}
+  else{const t=R.int(0,2);
+    if(t===0){fs=[rMix(R,4),rFrac(R,5)];type='ff'}
+    else if(t===1){fs=[rMix(R,4),rMix(R,4)];type='ff'}
+    else{fs=[rWhole(R,2,7),rMix(R,4)];type='wf'}}
+  const im=fs.map(impF);
+  const N=im[0].n*im[1].d,Dn=im[0].d*im[1].n;
+  const ans=frac(N,Dn);
+  const q={kind:'frac',ans,unit:'',dbg:{op:'fd',im}};
+  if(word){const t=R.pick(type==='wf'?FD_WF:type==='fw'?FD_FW:FD_FF);q.text=t.t[li()](pickName(R),showF(fs[0]),showF(fs[1]));q.unit=t.u[li()]}
+  else q.expr=showF(fs[0])+' ÷ '+showF(fs[1])+' = ?';
+  q.hint=word?X('<b>How many fit</b> or <b>shared equally</b> means DIVIDE. Use Keep – Change – Flip!','<b>كم مرة يتسع</b> أو <b>بالتساوي</b> تعني اقسم. استخدم: أبقِ – غيّر – اقلب!')
+    :X('Keep the first fraction, Change ÷ to ×, Flip the second fraction. Then multiply and simplify.','أبقِ الكسر الأول، وغيّر القسمة إلى ضرب، واقلب الكسر الثاني. ثم اضرب وبسّط.');
+  q.steps=fracSteps(fs,im,N,Dn,ans,true);
+  return q;
+}
+const GEN={add:genAdd,sub:genSub,mul:genMul,div:genDiv,fmul:genFMul,fdiv:genFDiv};
+const isWord=(lv,i)=>lv===1?i>=3:lv===2?(i%2===1||i===4):i>=1;
+function makeQ(wid,lv,word,R){const q=GEN[wid](R,lv,word);q.wid=wid;q.level=lv;q.word=!!word;return q}
+const worldsOf=cat=>WORLDS.filter(w=>cat==='mix'||w.cat===cat);
+function ansPlain(q){
+  if(q.kind==='dec')return dstr(q.ans);
+  const a=q.ans;if(a.d===1)return String(a.n);
+  if(a.n>a.d){const w=Math.floor(a.n/a.d),r=a.n%a.d;return r?w+' '+r+'/'+a.d:String(w)}
+  return a.n+'/'+a.d;
+}
+/* answer checking. returns {ok}|{partial}|{invalid}|{wrong} */
+function checkAnswer(q,v){
+  if(q.kind==='dec'){
+    const d=parseDec(normDigits(v.a||''));
+    if(!d)return{invalid:X('Type a number, like 12.5','اكتب عددًا، مثل 12.5')};
+    return eqD(norm(d),q.ans)?{ok:true}:{wrong:true};
+  }
+  const t=s=>normDigits(s).trim();
+  const W=t(v.w),Nn=t(v.n),Dd=t(v.d);
+  const isInt=s=>/^\d{1,6}$/.test(s);
+  if(W===''&&Nn===''&&Dd==='')return{invalid:X('Type your answer first.','اكتب إجابتك أولًا.')};
+  if(W!==''&&!isInt(W)||Nn!==''&&!isInt(Nn)||Dd!==''&&!isInt(Dd))return{invalid:X('Use whole numbers only in the boxes.','استخدم أعدادًا صحيحة فقط في الخانات.')};
+  const w=W===''?null:parseInt(W,10);
+  if(Nn===''&&Dd===''){return (q.ans.d===1&&q.ans.n===w)?{ok:true}:{wrong:true}}
+  if(Nn===''||Dd==='')return{invalid:X('Fill in both the top and the bottom of the fraction.','املأ بسط الكسر ومقامه معًا.')};
+  const n=parseInt(Nn,10),d=parseInt(Dd,10);
+  if(d===0)return{invalid:X('The bottom number cannot be 0.','لا يمكن أن يكون المقام 0.')};
+  const valN=(w||0)*d+n;
+  if(valN*q.ans.d!==q.ans.n*d)return{wrong:true};
+  const reduced=gcd(n,d)===1||n===0;
+  const properMix=w===null||n<d;
+  if(!reduced||!properMix)return{partial:X('Right value! Now write it in simplest form (no common factors, and a mixed number needs a fraction less than 1).','القيمة صحيحة! اكتبها الآن في أبسط صورة (بلا عوامل مشتركة، والعدد الكسري يحتاج كسرًا أصغر من 1).')};
+  return{ok:true};
+}
+
+/* ================= sound ================= */
+const Snd=(()=>{
+  let ctx=null,mg,sg,tm=null,nt=0,st=0,cur=null,want=null,nb=null;
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  function init(){
+    if(!ctx){
+      const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+      try{ctx=new AC();const m=ctx.createGain();m.gain.value=.9;m.connect(ctx.destination);mg=ctx.createGain();mg.gain.value=.55;mg.connect(m);sg=ctx.createGain();sg.gain.value=.9;sg.connect(m);
+        nb=ctx.createBuffer(1,ctx.sampleRate*.08,ctx.sampleRate);const a=nb.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1}catch(e){ctx=null;return}
+    }
+    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+    if(want&&DB.prefs.music&&!tm)music(want);
+  }
+  function tone(f,t,d,type,v,dest,f2){
+    const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+    if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.05);
+  }
+  function hat(t){const s=ctx.createBufferSource();s.buffer=nb;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=7000;const g=ctx.createGain();g.gain.value=.05;s.connect(f);f.connect(g);g.connect(mg);s.start(t)}
+  function kick(t,v){tone(140,t,.14,'sine',v||.5,mg,45)}
+  const SFX={
+    click:t=>tone(660,t,.07,'square',.1,sg),
+    ok:t=>{[72,76,79,84].forEach((m,i)=>tone(hz(m),t+i*.07,.18,'triangle',.28,sg))},
+    no:t=>{tone(230,t,.3,'sawtooth',.14,sg,110)},
+    coin:t=>{tone(hz(83),t,.08,'square',.12,sg);tone(hz(88),t+.08,.25,'square',.12,sg)},
+    win:t=>{[72,72,72,76,79,84,79,84].forEach((m,i)=>tone(hz(m),t+i*.11,.2,'square',.13,sg))},
+    trophy:t=>{[76,79,83,88].forEach((m,i)=>tone(hz(m),t+i*.09,.3,'triangle',.25,sg))},
+    tick:t=>tone(1100,t,.04,'square',.07,sg),
+    lose:t=>{[67,64,60].forEach((m,i)=>tone(hz(m),t+i*.16,.25,'triangle',.25,sg))}
+  };
+  function play(n){if(!ctx||!DB.prefs.sfx||!SFX[n])return;SFX[n](ctx.currentTime+.01)}
+  const CH=[{r:48,m:0},{r:45,m:1},{r:41,m:0},{r:43,m:0}];
+  const MEL=[76,0,79,0,81,79,76,0,74,0,76,79,0,76,74,0,72,0,74,76,0,74,72,0,74,76,79,0,81,0,79,0];
+  const BPM={menu:96,game:128};
+  function stepAt(s,t){
+    const bar=Math.floor(s/8)%4,p=s%8,c=CH[bar],game=cur==='game';
+    if(p===0||p===(game?3:4)||(game&&p===6))tone(hz(c.r),t,.24,'triangle',.3,mg);
+    const arp=c.m?[0,3,7,12,7,3,7,3]:[0,4,7,12,7,4,7,4];
+    tone(hz(c.r+24+arp[p]),t,.14,'square',game?.045:.03,mg);
+    if(game){const mn=MEL[s%32];if(mn)tone(hz(mn),t,.2,'square',.055,mg);if(p%2===1)hat(t);if(p===0||p===4)kick(t)}
+    else if(p===0)kick(t,.3);
+  }
+  function sched(){if(!ctx||!cur)return;const spb=60/BPM[cur]/2;while(nt<ctx.currentTime+.3){stepAt(st,nt);nt+=spb;st++}}
+  function stop(){if(tm){clearInterval(tm);tm=null}}
+  function music(name){
+    want=name;if(!ctx||!DB.prefs.music)return;
+    if(cur===name&&tm)return;
+    stop();cur=name;st=0;nt=ctx.currentTime+.06;tm=setInterval(sched,80);
+  }
+  function setMusic(on){DB.prefs.music=on;save();if(on){init();if(want)music(want)}else{stop();cur=null}}
+  function setSfx(on){DB.prefs.sfx=on;save();if(on){init();play('click')}}
+  document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden){stop();ctx.suspend().catch(()=>{})}else{ctx.resume().catch(()=>{});if(DB.prefs.music&&want){cur=null;music(want)}}});
+  return{init,play,music,setMusic,setSfx};
+})();
+
+/* ================= small UI helpers ================= */
+let toastT=null;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600)}
+function burst(n){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const fx=$('#fx'),cols=['--blue','--orange','--green','--yellow','--pink','--purple'];n=n||28;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span');s.className='cf';
+    s.style.left=(30+Math.random()*40)+'vw';s.style.top='28vh';
+    s.style.background='var('+cols[i%cols.length]+')';
+    s.style.setProperty('--dx',(Math.random()*500-250)+'px');s.style.setProperty('--dy',(Math.random()*420-60)+'px');s.style.setProperty('--r',(Math.random()*720-360)+'deg');
+    fx.appendChild(s);setTimeout(()=>s.remove(),1400);
+  }
+}
+function giveBadge(id){if(!P||P.badges.includes(id))return;P.badges.push(id);save();toast(BADGES[id][0]+' '+X('New trophy: ','لقب جديد: ')+BADGES[id][1][li()]+'!');Snd.play('trophy')}
+const stars=(w,l)=>(P&&P.stars[w+'-'+l])||0;
+const worldOpen=wi=>DB.prefs.teacher||wi===0||stars(WORLDS[wi-1].id,1)>0;
+const levelOpen=(wi,l)=>DB.prefs.teacher||(worldOpen(wi)&&(l===1||stars(WORLDS[wi].id,l-1)>0));
+function addPoints(n){P.points+=n;if(P.points>=1000)giveBadge('k1');save()}
+
+/* ================= online (db + room), optional ================= */
+const Online={db:null,room:null,status:'checking',code:'',peers:[],board:[],rboard:[],unsubs:[],rUnsub:null,busy:false,again:false,
+  async init(){
+    try{
+      if(!(window.claude&&window.claude.use)){this.status='off';return}
+      const a=await Promise.all([window.claude.use('db').catch(()=>null),window.claude.use('room').catch(()=>null)]);
+      this.db=a[0];this.room=a[1];this.status=(this.db||this.room)?'on':'off';
+      if(this.room){this.room.onPeers(ch=>{this.peers=ch.peers;updateLive()},()=>{})}
+    }catch(e){this.status='off'}
+    if(S.screen==='arena')render();
+  },
+  presence(patch){if(this.room){this.room.presence(patch).catch(()=>{})}},
+  join(code){
+    this.leave();this.code=code;DB.prefs.code=code;save();
+    this.presence({app:'na',code,name:P.name,avatar:P.avatar,score:0,qn:0,state:'lobby',rk:''});
+    if(this.db){
+      try{this.unsubs.push(this.db.collection('arena/'+code+'/scores').orderBy('points','desc').limit(30).onSnapshot(s=>{this.board=s.docs.map(d=>Object.assign({id:d.id},d.data()));updateLive()},()=>{}))}catch(e){}
+    }
+    this.syncProfile();
+  },
+  leave(){this.unsubs.forEach(u=>{try{u()}catch(e){}});this.unsubs=[];this.watchRound(null);if(this.code)this.presence({code:null,state:null});this.code='';this.board=[];this.rboard=[]},
+  watchRound(key){
+    if(this.rUnsub){try{this.rUnsub()}catch(e){}this.rUnsub=null}this.rboard=[];
+    if(!key||!this.db||!this.code)return;
+    try{this.rUnsub=this.db.collection('arena/'+this.code+'/rounds/'+key+'/players').orderBy('score','desc').limit(30).onSnapshot(s=>{this.rboard=s.docs.map(d=>Object.assign({id:d.id},d.data()));updateLive()},()=>{})}catch(e){}
+  },
+  async syncProfile(){
+    if(!this.db||!this.code)return;
+    if(this.busy){this.again=true;return}
+    this.busy=true;
+    try{await this.db.doc('arena/'+this.code+'/scores/'+P.id).set({name:P.name.slice(0,16),avatar:P.avatar,points:P.points,updated:Date.now()})}catch(e){}
+    this.busy=false;if(this.again){this.again=false;this.syncProfile()}
+  },
+  async writeRound(key,score,correct){
+    if(!this.db||!this.code)return;
+    try{await this.db.doc('arena/'+this.code+'/rounds/'+key+'/players/'+P.id).set({name:P.name.slice(0,16),avatar:P.avatar,score,correct,updated:Date.now()})}catch(e){}
+  },
+  here(){return this.peers.filter(p=>p.presence&&p.presence.code===this.code)}
+};
+const safeAv=a=>AVATARS.includes(a)?a:'🙂';
+const safeName=n=>esc(String(n||'Player').slice(0,16));
+const safeNum=n=>Number.isFinite(n)?Math.max(0,Math.min(99999,Math.round(n))):0;
+function peerRows(){
+  const list=Online.here();
+  if(!list.length)return '<p class="muted">'+X('No one else is here yet. Share your class code!','لا أحد هنا بعد. شارك رمز الفصل!')+'</p>';
+  return '<ul class="live">'+list.map(p=>{const pr=p.presence;const st=['lobby','playing','done'].includes(pr.state)?pr.state:'lobby';
+    return '<li><span>'+safeAv(pr.avatar)+'</span><b>'+safeName(pr.name)+(p.isMe?X(' (you)',' (أنت)'):'')+'</b><span class="pill">'+X(st,{lobby:'ينتظر',playing:'يلعب',done:'أنهى'}[st])+'</span><span class="sp"></span><span>'+(st==='lobby'?'':safeNum(pr.score)+X(' pts',' نقطة'))+'</span></li>'}).join('')+'</ul>';
+}
+function boardRows(rows,field,label){
+  if(!rows.length)return '<p class="muted">'+X('Nothing here yet. Be the first on the board!','لا شيء هنا بعد. كن أول من يظهر في اللوحة!')+'</p>';
+  return '<table class="lt"><thead><tr><th></th><th>'+X('Player','اللاعب')+'</th><th>'+label+'</th></tr></thead><tbody>'+rows.map((r,i)=>'<tr><td class="rankn">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</td><td>'+safeAv(r.avatar)+' '+safeName(r.name)+(r.id===P.id?X(' (you)',' (أنت)'):'')+'</td><td>'+fmtN(safeNum(r[field]))+'</td></tr>').join('')+'</tbody></table>';
+}
+function liveStanding(){
+  if(!QZ||QZ.mode!=='battle')return '';
+  const list=Online.here().filter(p=>p.presence.rk===QZ.key).sort((a,b)=>safeNum(b.presence.score)-safeNum(a.presence.score)).slice(0,5);
+  if(list.length<2)return '';
+  return '<ul class="live">'+list.map((p,i)=>'<li><span class="rankn">'+(i+1)+'</span><span>'+safeAv(p.presence.avatar)+'</span><b>'+safeName(p.presence.name)+(p.isMe?X(' (you)',' (أنت)'):'')+'</b><span class="sp"></span><span>'+X('Q','س')+safeNum(p.presence.qn)+' · '+safeNum(p.presence.score)+'</span></li>').join('')+'</ul>';
+}
+function updateLive(){
+  const a=$('#peerList');if(a)a.innerHTML=peerRows();
+  const b=$('#boardList');if(b)b.innerHTML=boardRows(Online.board,'points',X('Points','النقاط'));
+  const c=$('#roundList');if(c)c.innerHTML=boardRows(Online.rboard,'score',X('Score','النتيجة'));
+  const d=$('#liveStand');if(d)d.innerHTML=liveStanding();
+}
+
+/* ================= lessons ================= */
+const MASCOT='<svg viewBox="0 0 120 124" class="bot" role="img" aria-label="Deci the robot"><line x1="60" y1="8" x2="60" y2="24" stroke="var(--line)" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="8" r="7" style="fill:var(--pink)" stroke="var(--line)" stroke-width="4"/><rect x="18" y="24" width="84" height="66" rx="22" style="fill:var(--blue)" stroke="var(--line)" stroke-width="5"/><rect x="30" y="38" width="60" height="34" rx="14" style="fill:#fff" stroke="var(--line)" stroke-width="4"/><circle cx="47" cy="55" r="7" style="fill:var(--dk)"/><circle cx="73" cy="55" r="7" style="fill:var(--dk)"/><path d="M48 77 Q60 85 72 77" fill="none" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/><rect x="30" y="92" width="60" height="26" rx="9" style="fill:var(--yellow)" stroke="var(--line)" stroke-width="5"/><text x="60" y="112" text-anchor="middle" font-family="Lilita One,Arial,sans-serif" font-size="20" style="fill:var(--dk)">0.5</text></svg>';
+function pvChart(){
+  return '<div class="scroll-x"><table class="pvt" aria-label="'+X('Place value chart for 12.75','جدول المنازل للعدد 12.75')+'"><tr><th>'+X('Tens','العشرات')+'</th><th>'+X('Ones','الآحاد')+'</th><th></th><th>'+X('Tenths','الأجزاء من عشرة')+'</th><th>'+X('Hundredths','الأجزاء من مئة')+'</th></tr><tr><td>1</td><td>2</td><td class="dot">.</td><td>7</td><td>5</td></tr></table></div>';
+}
+function areaModel(cols,sc,rows,sr,mode){
+  const cw=44,ch=30,W=cols*cw,H=rows*ch;
+  let s='<svg viewBox="0 0 '+(W+4)+' '+(H+4)+'" class="area" role="img" aria-label="Grid showing '+sc+'/'+cols+' of '+sr+'/'+rows+'">';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const inC=c<sc,inR=r<sr;let cls='c0';
+    if(mode>=1&&inC&&inR)cls='cb';else if(inC)cls='cc';else if(mode>=1&&inR)cls='cr';
+    s+='<rect x="'+(c*cw+2)+'" y="'+(r*ch+2)+'" width="'+cw+'" height="'+ch+'" class="'+cls+'"/>';
+  }
+  return s+'</svg>';
+}
+const LESSONS={
+  add:{idea:[
+      'Decimals are numbers with a <b>decimal point</b>. Every digit has a place value, and only the <b>same places</b> can be added together. That is why we line up the dots!',
+      'الأعداد العشرية أعداد فيها <b>فاصلة عشرية</b>. لكل رقم قيمة منزلية، ولا نجمع إلا <b>المنازل المتشابهة</b>. لهذا نضع الفواصل في عمود واحد!'],
+    keys:[['Stack the numbers and line up the decimal points.','Fill empty places with zeros.','Add from the right. Carry when a column makes 10 or more.','Drop the decimal point straight down.'],
+      ['اكتب الأعداد فوق بعضها وضع الفواصل العشرية في عمود واحد.','املأ الخانات الفارغة بأصفار.','اجمع من اليمين، واحمل عندما يبلغ العمود 10 أو أكثر.','أنزل الفاصلة العشرية مباشرة إلى الأسفل.']],
+    stages:[
+      {say:['Let\'s add <b>3.4 + 12.75</b>. Stack the numbers so the dots sit in one column.','لنجمع <b>3.4 + 12.75</b>. ضع الأعداد فوق بعضها بحيث تقع الفواصل في عمود واحد.'],view:()=>vert([dv(34,1),dv(1275,2)],'+',null,false)},
+      {say:['Fill the empty places with zeros. 3.4 is the same as <b>3.40</b>. Zeros at the end do not change the value.','املأ الخانات الفارغة بأصفار. العدد 3.4 يساوي <b>3.40</b>. الأصفار في آخر العدد العشري لا تغيّر قيمته.'],view:()=>vert([dv(34,1),dv(1275,2)],'+')},
+      {say:['Add column by column from the right.','اجمع عمودًا عمودًا من اليمين.'],view:()=>X('<div class="calc">hundredths: 0 + 5 = 5<br>tenths: 4 + 7 = 11 → write 1, carry 1<br>ones: 3 + 2 + 1 = 6<br>tens: 0 + 1 = 1</div>',
+        '<div class="calcx">الأجزاء من مئة: '+eq('0 + 5 = 5')+'<br>الأجزاء من عشرة: '+eq('4 + 7 = 11')+' ← اكتب 1 واحمل 1<br>الآحاد: '+eq('3 + 2 + 1 = 6')+'<br>العشرات: '+eq('0 + 1 = 1')+'</div>')},
+      {say:['Bring the decimal point straight down. Answer: <b>16.15</b>','أنزل الفاصلة العشرية مباشرة إلى الأسفل. الجواب: <b>16.15</b>'],view:()=>vert([dv(34,1),dv(1275,2)],'+',dv(1615,2))+X('<p>Sense check: 3 + 13 = 16, so 16.15 makes sense. ✅</p>','<p>فحص سريع: '+eq('3 + 13 = 16')+'، فالجواب 16.15 منطقي. ✅</p>')}],
+    tricks:[['A whole number has a hidden decimal point: 7 = 7.00.','Estimate first by rounding. 3.4 + 12.75 is about 3 + 13 = 16.','Money is a great helper: 2.50 SAR is two riyals and fifty halalas.'],
+      ['للعدد الصحيح فاصلة مخفية: 7 = 7.00.','قدّر أولًا بالتقريب. 3.4 + 12.75 قريب من 3 + 13 = 16.','النقود تساعدك: 2.50 ريال تعني ريالين وخمسين هللة.']],
+    oops:[['Lining up the right-hand edges instead of the dots. Always line up the dots!','Forgetting the point in the answer.'],
+      ['محاذاة الأطراف اليمنى بدلًا من الفواصل. حاذِ الفواصل دائمًا!','نسيان الفاصلة في الجواب.']]},
+  sub:{idea:[
+      'Subtracting decimals works just like adding: same places under each other, and the <b>bigger number goes on top</b>. If a top digit is too small, borrow from the left.',
+      'يشبه طرح الأعداد العشرية جمعها: المنازل المتشابهة تحت بعضها، و<b>العدد الأكبر في الأعلى</b>. وإذا كان الرقم العلوي أصغر فاستلف من اليسار.'],
+    keys:[['Bigger number on top, decimal points lined up.','Fill empty places with zeros.','Subtract from the right. Borrow when the top digit is too small.','Drop the point down and check by adding.'],
+      ['العدد الأكبر في الأعلى والفواصل في عمود واحد.','املأ الخانات الفارغة بأصفار.','اطرح من اليمين، واستلف عندما يكون الرقم العلوي أصغر.','أنزل الفاصلة وتحقق بالجمع.']],
+    stages:[
+      {say:['Let\'s subtract <b>8.5 − 2.36</b>. Stack them and line up the dots.','لنطرح <b>8.5 − 2.36</b>. ضعهما فوق بعضهما وحاذِ الفواصل.'],view:()=>vert([dv(85,1),dv(236,2)],'−',null,false)},
+      {say:['Fill the gap with a zero: 8.5 becomes <b>8.50</b>.','املأ الفراغ بصفر: 8.5 تصير <b>8.50</b>.'],view:()=>vert([dv(85,1),dv(236,2)],'−')},
+      {say:['Subtract from the right, borrowing when you need to.','اطرح من اليمين واستلف عند الحاجة.'],view:()=>X('<div class="calc">hundredths: 0 − 6 cannot be done → borrow from the tenths: 10 − 6 = 4<br>tenths: now 4 − 3 = 1<br>ones: 8 − 2 = 6</div>',
+        '<div class="calcx">الأجزاء من مئة: لا يمكن '+eq('0 − 6')+'، فنستلف من الأجزاء من عشرة: '+eq('10 − 6 = 4')+'<br>الأجزاء من عشرة: صارت '+eq('4 − 3 = 1')+'<br>الآحاد: '+eq('8 − 2 = 6')+'</div>')},
+      {say:['Drop the point down. Answer: <b>6.14</b>','أنزل الفاصلة. الجواب: <b>6.14</b>'],view:()=>vert([dv(85,1),dv(236,2)],'−',dv(614,2))+X('<p>Check by adding: 6.14 + 2.36 = 8.50 ✅</p>','<p>تحقق بالجمع: '+eq('6.14 + 2.36 = 8.50')+' ✅</p>')}],
+    tricks:[['Check every subtraction by adding the answer back.','To do 10 − 3.47, write 10 as <b>10.00</b> first, then borrow across the zeros.','Think of change at a shop: pay 10 SAR for a 3.47 SAR snack.'],
+      ['تحقق من كل طرح بجمع الجواب مع العدد المطروح.','لحساب 10 − 3.47 اكتب 10 على الشكل <b>10.00</b> أولًا ثم استلف عبر الأصفار.','فكّر في الباقي عند الشراء: دفعت 10 ريالات ثمن وجبة بـ 3.47 ريال.']],
+    oops:[['Putting the smaller number on top.','Forgetting to borrow, and doing 6 − 0 instead of 0 − 6.'],
+      ['وضع العدد الأصغر في الأعلى.','نسيان الاستلاف، وحساب 6 − 0 بدل 0 − 6.']]},
+  mul:{idea:[
+      'To multiply decimals, forget the points for a moment, multiply like whole numbers, then <b>put the point back</b> by counting decimal places.',
+      'لضرب الأعداد العشرية، انسَ الفواصل قليلًا، واضرب كأنها أعداد صحيحة، ثم <b>أعد الفاصلة</b> بعدّ المنازل العشرية.'],
+    keys:[['Ignore the decimal points and multiply like whole numbers.','Count the decimal places in both numbers.','Put that many places in the answer, counting from the right.'],
+      ['أهمل الفواصل واضرب كأنها أعداد صحيحة.','عُدّ المنازل العشرية في العددين.','ضع في الجواب العدد نفسه من المنازل، وعُدّ من اليمين.']],
+    stages:[
+      {say:['Let\'s multiply <b>2.4 × 0.3</b>. Ignore the points: 24 × 3.','لنضرب <b>2.4 × 0.3</b>. أهمل الفاصلتين: 24 × 3.'],view:()=>'<div class="calc">24 × 3 = 72</div>'},
+      {say:['Count the decimal places. 2.4 has <b>1</b>. 0.3 has <b>1</b>. Total: <b>2</b> places.','عُدّ المنازل العشرية. في 2.4 منزلة <b>1</b>. وفي 0.3 منزلة <b>1</b>. المجموع: <b>2</b>.'],view:()=>X('<div class="calc">2.4 → 1 place<br>0.3 → 1 place<br>total → 2 places</div>',
+        '<div class="calcx">'+eq('2.4')+': منزلة واحدة<br>'+eq('0.3')+': منزلة واحدة<br>المجموع: منزلتان</div>')},
+      {say:['Start at the right of 72 and move the point 2 places left. Answer: <b>0.72</b>','ابدأ من يمين 72 وحرّك الفاصلة منزلتين إلى اليسار. الجواب: <b>0.72</b>'],view:()=>'<div class="calc">72 → 0.72</div>'},
+      {say:['Sense check: 2.4 is about 2, and 2 × 0.3 = 0.6. So 0.72 is close. ✅','فحص سريع: 2.4 قريب من 2، و2 × 0.3 = 0.6. إذن 0.72 قريب من ذلك. ✅'],view:()=>'<div class="calc">2 × 0.3 = 0.6 ≈ 0.72</div>'}],
+    tricks:[['Count decimal places, not zeros.','× 10 moves the point 1 place right. × 0.1 moves it 1 place left.','If you multiply by a number smaller than 1, the answer gets smaller.'],
+      ['عُدّ المنازل العشرية لا الأصفار.','الضرب في 10 يحرّك الفاصلة منزلة إلى اليمين، والضرب في 0.1 يحرّكها منزلة إلى اليسار.','عند الضرب في عدد أصغر من 1 يصير الناتج أصغر.']],
+    oops:[['Lining up the dots like in addition. Not needed here!','Counting the places in only one number.'],
+      ['محاذاة الفواصل كما في الجمع. لا داعي لذلك هنا!','عدّ المنازل في أحد العددين فقط.']]},
+  div:{idea:[
+      'You cannot easily divide by a decimal, so <b>make the divisor a whole number</b> by moving its point. Move the dividend\'s point the <b>same number of places</b>, then divide as usual.',
+      'لا نستطيع القسمة بسهولة على عدد عشري، لذلك <b>نجعل المقسوم عليه عددًا صحيحًا</b> بتحريك فاصلته. ثم نحرّك فاصلة المقسوم <b>بالعدد نفسه من المنازل</b> ونقسم كالمعتاد.'],
+    keys:[['Move the divisor\'s point right until it is a whole number.','Move the dividend\'s point the same number of places.','Divide as usual and keep the point straight above.'],
+      ['حرّك فاصلة المقسوم عليه إلى اليمين حتى يصير عددًا صحيحًا.','حرّك فاصلة المقسوم بالعدد نفسه من المنازل.','اقسم كالمعتاد وضع الفاصلة في مكانها فوق.']],
+    stages:[
+      {say:['Let\'s divide <b>7.2 ÷ 0.4</b>. Make the divisor a whole number: 0.4 → <b>4</b> (moved 1 place).','لنقسم <b>7.2 ÷ 0.4</b>. اجعل المقسوم عليه عددًا صحيحًا: 0.4 ← <b>4</b> (حرّكنا منزلة واحدة).'],view:()=>'<div class="calc">0.4 → 4</div>'},
+      {say:['Do the SAME move to 7.2: it becomes <b>72</b>.','افعل الشيء نفسه بالعدد 7.2: يصير <b>72</b>.'],view:()=>'<div class="calc">7.2 → 72</div>'},
+      {say:['Divide as usual: <b>72 ÷ 4 = 18</b>.','اقسم كالمعتاد: <b>72 ÷ 4 = 18</b>.'],view:()=>'<div class="calc">7.2 ÷ 0.4 = 72 ÷ 4 = 18</div>'},
+      {say:['Check by multiplying: 18 × 0.4 = 7.2 ✅','تحقق بالضرب: 18 × 0.4 = 7.2 ✅'],view:()=>'<div class="calc">18 × 0.4 = 7.2</div>'}],
+    tricks:[['Decimal ÷ whole number? Just divide and keep the point straight above: 8.4 ÷ 3 = 2.8.','Dividing by a number smaller than 1 makes the answer BIGGER.','Both points move the same amount, so the answer does not change.'],
+      ['عدد عشري ÷ عدد صحيح؟ اقسم كالمعتاد وضع الفاصلة في مكانها فوق: 8.4 ÷ 3 = 2.8.','القسمة على عدد أصغر من 1 تجعل الناتج <b>أكبر</b>.','الفاصلتان تتحركان بالمقدار نفسه، فلا يتغير الناتج.']],
+    oops:[['Moving only the divisor\'s point.','Forgetting to move the point in the answer when the divisor was already whole.'],
+      ['تحريك فاصلة المقسوم عليه فقط.','نسيان وضع الفاصلة في الناتج عندما يكون المقسوم عليه عددًا صحيحًا.']]},
+  fmul:{idea:[
+      'Multiplying fractions is the friendliest operation: <b>tops × tops</b> and <b>bottoms × bottoms</b>. The word <b>"of"</b> means multiply, so 1/2 of 1/4 is 1/2 × 1/4.',
+      'ضرب الكسور أسهل العمليات: <b>البسط × البسط</b> و<b>المقام × المقام</b>. وكلمة <b>«من»</b> تعني الضرب، فنصف ربع يعني 1/2 × 1/4.'],
+    keys:[['Change mixed numbers to improper fractions.','Multiply the tops. Multiply the bottoms.','Simplify (cross-cancel first to keep numbers small).','Change back to a mixed number if you like.'],
+      ['حوّل الأعداد الكسرية إلى كسور غير فعلية.','اضرب البسطين واضرب المقامين.','بسّط (واختصر أولًا لتبقى الأعداد صغيرة).','أعد الناتج إلى عدد كسري إن شئت.']],
+    stages:[
+      {say:['Let\'s multiply <b>2/3 × 3/4</b>. Shade 2/3 of the box with columns.','لنضرب <b>2/3 × 3/4</b>. ظلّل 2/3 من الصندوق بالأعمدة.'],view:()=>areaModel(3,2,4,3,0)},
+      {say:['Now shade 3/4 of the box with rows. The <b>green</b> part is where they overlap.','ظلّل الآن 3/4 من الصندوق بالصفوف. الجزء <b>الأخضر</b> هو التقاطع.'],view:()=>areaModel(3,2,4,3,1)},
+      {say:['Count: the overlap is 6 small boxes out of 12. Same as tops × tops = 2 × 3 = 6 and bottoms × bottoms = 3 × 4 = 12.','عُدّ: التقاطع 6 مربعات صغيرة من 12. وهذا يساوي البسط × البسط = 2 × 3 = 6 والمقام × المقام = 3 × 4 = 12.'],view:()=>'<div class="calc">'+frH(2,3)+' × '+frH(3,4)+' = '+frH(6,12)+'</div>'},
+      {say:['Simplify: divide top and bottom by 6. Answer: <b>1/2</b>','بسّط: اقسم البسط والمقام على 6. الجواب: <b>1/2</b>'],view:()=>'<div class="calc">'+frH(6,12)+' = '+frH(1,2)+'</div><p>'+X('Shortcut: cancel the 3s first!','اختصار سريع: اشطب العددين 3 أولًا!')+'</p><div class="calc">'+frH(2,3)+' × '+frH(3,4)+' = '+frH(2,1)+' × '+frH(1,4)+' = '+frH(2,4)+' = '+frH(1,2)+'</div>'}],
+    tricks:[['Cross-cancel: if a top and a bottom share a factor, divide both by it before you multiply.','Whole numbers are fractions over 1: 5 = 5/1.','Mixed numbers first! 1 1/2 = 3/2.'],
+      ['الاختصار التبادلي: إذا اشترك بسط ومقام في عامل فاقسمهما عليه قبل الضرب.','العدد الصحيح كسر مقامه 1: 5 = 5/1.','حوّل الأعداد الكسرية أولًا! 1 1/2 = 3/2.']],
+    oops:[['Finding a common denominator. You do not need one for multiplying!','Forgetting to simplify.'],
+      ['البحث عن مقام مشترك. لا حاجة إليه في الضرب!','نسيان التبسيط.']]},
+  fdiv:{idea:[
+      'Dividing asks <b>"how many fit?"</b> How many halves fit in 3/4? Instead of guessing, use the trick: <b>Keep – Change – Flip</b>. You turn the division into a multiplication.',
+      'القسمة تسأل: <b>«كم مرة يتسع؟»</b> كم نصفًا يتسع في 3/4؟ بدل التخمين استخدم الحيلة: <b>أبقِ – غيّر – اقلب</b>. فتتحول القسمة إلى ضرب.'],
+    keys:[['Change mixed numbers to improper fractions.','Keep the first fraction, Change ÷ to ×, Flip the second fraction.','Multiply tops and bottoms.','Simplify.'],
+      ['حوّل الأعداد الكسرية إلى كسور غير فعلية.','أبقِ الكسر الأول، غيّر القسمة إلى ضرب، واقلب الكسر الثاني.','اضرب البسطين واضرب المقامين.','بسّط.']],
+    stages:[
+      {say:['Let\'s divide <b>3/4 ÷ 1/2</b>. <b>Keep</b> the first fraction, <b>Change</b> the sign, <b>Flip</b> the second.','لنقسم <b>3/4 ÷ 1/2</b>. <b>أبقِ</b> الكسر الأول، و<b>غيّر</b> الإشارة، و<b>اقلب</b> الكسر الثاني.'],view:()=>X('<div class="calc kcf"><b class="k">Keep</b> '+frH(3,4)+' &nbsp;<b class="c">Change</b> ÷ → × &nbsp;<b class="f">Flip</b> '+frH(1,2)+' → '+frH(2,1)+'</div>',
+        '<div class="calcx kcf"><b class="k">أبقِ</b> '+frH(3,4)+' &nbsp;<b class="c">غيّر</b> القسمة إلى ضرب &nbsp;<b class="f">اقلب</b> '+frH(1,2)+' ليصير '+frH(2,1)+'</div>')},
+      {say:['Now multiply tops and bottoms.','اضرب الآن البسطين والمقامين.'],view:()=>'<div class="calc">'+frH(3,4)+' × '+frH(2,1)+' = '+frH(6,4)+'</div>'},
+      {say:['Simplify by 2: <b>3/2</b>. As a mixed number that is <b>1 1/2</b>.','بسّط بالقسمة على 2: <b>3/2</b>. وكعدد كسري هي <b>1 1/2</b>.'],view:()=>'<div class="calc">'+frH(6,4)+' = '+frH(3,2)+' = '+ansH({n:3,d:2})+'</div>'},
+      {say:['Does it make sense? One and a half halves fit into 3/4? Check: 1 1/2 × 1/2 = 3/4 ✅','تحقق بالضرب: 1 1/2 × 1/2 = 3/4 ✅'],view:()=>'<div class="calc">'+ansH({n:3,d:2})+' × '+frH(1,2)+' = '+frH(3,4)+'</div>'}],
+    tricks:[['The flipped fraction is called the <b>reciprocal</b>. The reciprocal of 5 is 1/5.','Dividing by a fraction smaller than 1 makes the answer bigger.','Only flip the SECOND fraction, never the first.'],
+      ['الكسر المقلوب يسمى <b>المقلوب (النظير الضربي)</b>. مقلوب 5 هو 1/5.','القسمة على كسر أصغر من 1 تجعل الناتج أكبر.','اقلب الكسر <b>الثاني</b> فقط، لا الأول أبدًا.']],
+    oops:[['Flipping the wrong fraction.','Flipping but forgetting to change ÷ to ×.'],
+      ['قلب الكسر الخطأ.','القلب مع نسيان تغيير القسمة إلى ضرب.']]}
+};
+
+/* ================= state ================= */
+const S={screen:'home',lw:0,lp:0,ls:0,ji:0,fi:0,setup:{cat:'mix',diff:1,p1:'',p2:''},confirm:false,arena:{round:1,cat:'mix',diff:1},avSel:AVATARS[0]};
+let QZ=null,TM=[],TR=null;
+const dayIdx=Math.floor(Date.now()/864e5);
+S.ji=dayIdx%JOKES_L[0].length;S.fi=(dayIdx*3)%FACTS_L[0].length;
+const world=id=>WORLDS.find(w=>w.id===id);
+function stopTimers(){TM.forEach(clearInterval);TM=[]}
+
+/* ================= screens ================= */
+const CATS=()=>[['dec',X('Decimals','الأعداد العشرية')],['frac',X('Fractions','الكسور')],['mix',X('Mixed','مختلط')]];
+const DIFFS=()=>[[1,X('Easy','سهل')],[2,X('Medium','متوسط')],[3,X('Hard','صعب')]];
+function hallName(m){
+  if(typeof m!=='string')return '';
+  if(m.indexOf('blitz:')===0){const c=CATS().find(x=>x[0]===m.slice(6));return X('Blitz','تحدي السرعة')+' '+(c?c[1]:'')}
+  if(m==='duel')return X('Duel','المنازلة');
+  if(m==='battle')return X('Battle','المعركة');
+  return m;
+}
+function top(){
+  if(!P)return '';
+  const r=rankOf(P.points);
+  return '<header class="top"><button class="chip" data-a="who" title="'+X('Switch player','تبديل اللاعب')+'">'+esc(P.avatar)+' '+esc(P.name)+'</button><span class="chip">⭐ '+fmtN(P.points)+'</span><span class="chip rk">'+esc(r.cur.n[li()])+'</span><span class="sp"></span>'
+   +(S.screen!=='quiz'?'<button class="chip" data-a="lang" aria-label="Language">🌐 '+X('عربي','English')+'</button>':'')
+   +'<button class="chip" data-a="tmusic" aria-label="'+X('Music','الموسيقى')+'" aria-pressed="'+DB.prefs.music+'">'+(DB.prefs.music?'🎵':'🔇')+'</button>'
+   +'<button class="chip" data-a="tsfx" aria-label="'+X('Sound effects','المؤثرات الصوتية')+'" aria-pressed="'+DB.prefs.sfx+'">'+(DB.prefs.sfx?'🔊':'🔈')+'</button>'
+   +'<button class="chip" data-a="settings" aria-label="'+X('Settings','الإعدادات')+'">⚙️</button></header>';
+}
+const backBtn=(a,label)=>'<button class="btn b-plain back" data-a="'+(a||'home')+'">'+(label||X('← Home','→ الرئيسية'))+'</button>';
+const NEXT=X('→','←'),PREV=X('←','→');
+
+function rWho(){
+  const ps=Object.values(DB.profiles);
+  return '<section class="card"><div class="row" style="margin-bottom:12px"><button class="btn '+(!isAr()?'b-yellow':'b-plain')+'" data-a="lang" data-v="en">English</button><button class="btn '+(isAr()?'b-yellow':'b-plain')+'" data-a="lang" data-v="ar">العربية</button></div>'
+   +'<h1 style="font-size:2.2rem">'+X('Who is playing?','من يلعب؟')+'</h1>'
+   +(ps.length?'<div class="row" style="margin:14px 0">'+ps.map(p=>'<button class="btn b-plain" data-a="pick" data-id="'+esc(p.id)+'">'+esc(p.avatar)+' '+esc(p.name)+' · ⭐ '+fmtN(p.points)+'</button>').join('')+'</div><hr style="border:0;border-top:3px dashed var(--muted);margin:14px 0">':'<p class="muted" style="margin:8px 0">'+X('Pick a name and a hero icon to start.','اختر اسمك وأيقونة بطلك لتبدأ.')+'</p>')
+   +'<h3>'+X('New player','لاعب جديد')+'</h3><label class="lb" for="pname">'+X('Your name','اسمك')+'</label><input id="pname" class="txt" dir="auto" maxlength="16" autocomplete="off" placeholder="'+X('Type your name','اكتب اسمك')+'">'
+   +'<label class="lb">'+X('Your hero icon','أيقونة البطل')+'</label><div class="avs" role="group" aria-label="'+X('Choose an icon','اختر أيقونة')+'">'+AVATARS.map(a=>'<button class="'+(a===S.avSel?'sel':'')+'" data-a="av" data-v="'+a+'" aria-label="'+a+'">'+a+'</button>').join('')+'</div>'
+   +'<div class="row" style="margin-top:18px"><button class="btn b-orange big" data-a="create">'+X('Let\'s go!','هيا بنا!')+'</button>'+(P?'<button class="btn b-plain" data-a="home">'+X('Cancel','إلغاء')+'</button>':'')+'</div></section>';
+}
+function rHome(){
+  const jk=jokes(),j=jk[S.ji%jk.length],fl=facts(),f=fl[S.fi%fl.length];
+  const tip=TIPS[dayIdx%TIPS.length][li()];
+  return '<section class="hero"><div class="mascot">'+MASCOT+'<div class="bubble">'+esc(tip)+'</div></div>'
+   +'<div><h1>'+X('Number Arena','ساحة الأرقام')+'</h1><p class="sub">'+X('Decimals and fractions. Learn the tricks, beat the levels, top the class board!','الأعداد العشرية والكسور. تعلّم الحيل، واجتز المستويات، وتصدّر لوحة الفصل!')+'</p><button class="btn b-orange big" data-a="map">'+X('Play Missions','ابدأ المهمات')+'</button></div></section>'
+   +'<div class="tiles">'
+   +'<button class="tile b-blue" data-a="map"><span class="em">🗺️</span><h3>'+X('Missions','المهمات')+'</h3><small>'+X('6 worlds, lessons and 3 levels each','6 عوالم مع دروس و3 مستويات لكل عالم')+'</small></button>'
+   +'<button class="tile b-orange" data-a="blitzsetup"><span class="em">⚡</span><h3>'+X('Speed Blitz','تحدي السرعة')+'</h3><small>'+X('60 seconds. How many can you crack?','60 ثانية. كم مسألة تحلّ؟')+'</small></button>'
+   +'<button class="tile b-pink" data-a="duelsetup"><span class="em">🥊</span><h3>'+X('Duel','المنازلة')+'</h3><small>'+X('Two players, one device','لاعبان على جهاز واحد')+'</small></button>'
+   +'<button class="tile b-purple" data-a="arena"><span class="em">🏟️</span><h3>'+X('Class Arena','ساحة الفصل')+'</h3><small>'+X('Battle classmates online','نافس زملاءك عبر الإنترنت')+'</small></button>'
+   +'<button class="tile b-green" data-a="fun"><span class="em">🎉</span><h3>'+X('Fun Zone','ركن المرح')+'</h3><small>'+X('Jokes, facts and trivia','نكات ومعلومات وأسئلة')+'</small></button>'
+   +'<button class="tile b-yellow" data-a="board"><span class="em">🏆</span><h3>'+X('Trophies','الجوائز')+'</h3><small>'+X('Ranks, badges and the leaderboard','الرتب والألقاب ولوحة الصدارة')+'</small></button>'
+   +'</div>'
+   +'<div class="grid2"><div class="card"><h3>😂 '+X('Joke of the day','نكتة اليوم')+'</h3><p class="joke" style="margin:8px 0">'+esc(j[0])+'</p><p id="punch" class="joke" hidden><b>'+esc(j[1])+'</b></p><div class="row"><button class="btn b-yellow" data-a="punch">'+X('Punchline!','الجواب!')+'</button></div></div>'
+   +'<div class="card"><h3>'+f[0]+' '+X('Fun fact','هل تعلم؟')+'</h3><p style="margin:8px 0">'+esc(f[1])+'</p></div></div>';
+}
+function rMap(){
+  return backBtn()+'<h2 style="margin-bottom:12px">'+X('Choose your mission','اختر مهمتك')+'</h2>'+WORLDS.map((w,wi)=>{
+    const open=worldOpen(wi);
+    return '<section class="world'+(open?'':' locked')+'"><div class="wh b-'+w.color+'"><span class="em">'+(open?w.em:'🔒')+'</span><div><h3>'+esc(w.n)+'</h3><small>'+esc(w.op)+'</small></div><span class="sp"></span>'
+     +(open?'<button class="btn b-plain" data-a="lesson" data-w="'+wi+'" style="padding:6px 14px;font-size:1rem">📖 '+X('Lesson','الدرس')+'</button>':'')+'</div>'
+     +'<div class="wb">'+LEVELS.map((L,li2)=>{
+        const lv=li2+1,ok=levelOpen(wi,lv),st=stars(w.id,lv);
+        return '<button class="node" data-a="level" data-w="'+wi+'" data-l="'+lv+'" '+(ok?'':'disabled')+'><b>'+(ok?'':'🔒 ')+X('Level ','المستوى ')+lv+' · '+L.n[li()]+'</b><span class="stars" aria-label="'+X(st+' of 3 stars',st+' من 3 نجوم')+'">'+'★'.repeat(st)+'☆'.repeat(3-st)+'</span></button>';
+      }).join('')+'</div></section>';
+  }).join('')+(DB.prefs.teacher?'':'<p class="muted" style="margin-top:14px">'+X('Earn a star in Level 1 to open the next world.','اربح نجمة في المستوى 1 لتفتح العالم التالي.')+'</p>');
+}
+function rLesson(){
+  const wi=S.lw,w=WORLDS[wi],L=LESSONS[w.id];
+  let body='';
+  if(S.lp===0){
+    body='<h2>'+w.em+' '+esc(w.n)+'</h2><p style="margin-top:8px">'+L.idea[li()]+'</p>'+(w.id==='add'||w.id==='sub'?pvChart():'')+'<h3 style="margin-top:14px">'+X('Easy steps','خطوات سهلة')+'</h3><ol class="keys">'+L.keys[li()].map(k=>'<li>'+k+'</li>').join('')+'</ol>'
+     +'<div class="row" style="margin-top:16px"><button class="btn b-orange" data-a="lnext">'+X('See it in action →','شاهد مثالًا ←')+'</button></div>';
+  }else if(S.lp===1){
+    const upto=S.ls;
+    body='<h2>'+X('Worked example','مثال محلول')+'</h2>'+L.stages.slice(0,upto+1).map((s,i)=>'<div class="stage'+(i===upto?' now':'')+'"><div class="say"><b>'+X('Step ','الخطوة ')+(i+1)+'.</b> '+s.say[li()]+'</div>'+s.view()+'</div>').join('')
+     +'<div class="row" style="margin-top:16px">'+(upto<L.stages.length-1?'<button class="btn b-orange" data-a="lnext">'+X('Next step →','الخطوة التالية ←')+'</button>':'<button class="btn b-orange" data-a="lnext">'+X('Tricks and traps →','حيل وأخطاء شائعة ←')+'</button>')+'<button class="btn b-plain" data-a="lprev">'+X('← Back','→ رجوع')+'</button></div>';
+  }else{
+    P.seen[w.id]=1;save();
+    body='<h2>'+X('Power tricks','حيل قوية')+'</h2><div class="stage trick"><ul class="tips">'+L.tricks[li()].map(t=>'<li>'+t+'</li>').join('')+'</ul></div><h3 style="margin-top:16px">'+X('Watch out!','احذر!')+'</h3><div class="stage trap"><ul class="tips">'+L.oops[li()].map(t=>'<li>'+t+'</li>').join('')+'</ul></div>'
+     +'<div class="row" style="margin-top:16px"><button class="btn b-green big" data-a="level" data-w="'+wi+'" data-l="1">'+X('Start Level 1!','ابدأ المستوى 1!')+'</button><button class="btn b-plain" data-a="lprev">'+X('← Back','→ رجوع')+'</button><button class="btn b-plain" data-a="map">'+X('Mission map','خريطة المهمات')+'</button></div>';
+  }
+  return backBtn('map',X('← Missions','→ المهمات'))+'<section class="card lesson">'+body+'</section>';
+}
+function dotsHtml(){
+  let s='';for(let i=0;i<QZ.count;i++){const r=QZ.log[i];s+='<span class="'+(r===undefined?(i===QZ.i?'n':''):r?'d':'x')+'"></span>'}
+  return '<div class="dots" aria-label="'+X('Question '+(QZ.i+1)+' of '+QZ.count,'السؤال '+(QZ.i+1)+' من '+QZ.count)+'">'+s+'</div>';
+}
+function inputArea(q){
+  const unit=q.unit?'<span class="unit">'+esc(q.unit)+'</span>':'';
+  if(q.kind==='dec')return '<div class="row"><input class="inp ans" id="a1" inputmode="decimal" autocomplete="off" aria-label="'+X('Your answer','إجابتك')+'" placeholder="'+X('Your answer','إجابتك')+'">'+unit+'</div>';
+  return '<div class="row"><div class="fin"><input class="inp ans" id="fw" inputmode="numeric" autocomplete="off" aria-label="'+X('Whole number part (optional)','الجزء الصحيح (اختياري)')+'" placeholder="'+X('whole','صحيح')+'"><div class="stack"><input class="inp ans" id="fn" inputmode="numeric" autocomplete="off" aria-label="'+X('Top number (numerator)','البسط')+'" placeholder="'+X('top','بسط')+'"><div class="hr"></div><input class="inp ans" id="fd" inputmode="numeric" autocomplete="off" aria-label="'+X('Bottom number (denominator)','المقام')+'" placeholder="'+X('bottom','مقام')+'"></div></div>'+unit+'</div><p class="muted" style="margin-top:6px;font-size:.95rem">'+X('Whole number? Fill only the first box. Mixed number? Use all three. Simplest form!','عدد صحيح؟ املأ الخانة الأولى فقط. عدد كسري؟ استخدم الخانات الثلاث. اكتب أبسط صورة!')+'</p>';
+}
+function rQuiz(){
+  const q=QZ.qs[QZ.i],m=QZ.mode;
+  const quit='<button class="btn b-plain" data-a="quit" style="padding:4px 12px;min-height:38px" aria-label="'+X('Quit','خروج')+'">✕</button>';
+  let head='';
+  if(m==='level'||m==='battle')head='<div class="qh">'+quit+dotsHtml()+'<span class="chip">🔥 '+QZ.streak+'</span><span class="chip">+'+QZ.score+'</span></div>';
+  else if(m==='blitz')head='<div class="qh">'+quit+'<div class="bar"><i id="tbar"></i></div><span class="chip" id="tnum">⏱ '+QZ.timed+'</span><span class="chip">✅ '+QZ.correct+'</span><span class="chip">+'+QZ.score+'</span></div>';
+  else head='<div class="qh">'+quit+dotsHtml()+'</div><div class="pl">'+QZ.players.map((p,i)=>'<div class="'+(i===QZ.i%2?'on':'')+'"><span>'+esc(p.avatar)+' '+esc(p.name)+'</span><b>'+p.score+'</b></div>').join('')+'</div>';
+  if(m==='duel'&&QZ.gate){
+    const p=QZ.players[QZ.i%2];
+    return head+'<section class="card qcard" style="text-align:center"><h2>'+esc(p.avatar)+' '+esc(p.name)+X(', you are up!','، جاء دورك!')+'</h2><p style="margin:8px 0 14px">'+X('Question '+(QZ.i+1)+' of '+QZ.count+'. Faster answers earn bonus points.','السؤال '+(QZ.i+1)+' من '+QZ.count+'. الإجابات الأسرع تكسب نقاطًا إضافية.')+'</p><button class="btn b-orange big" data-a="ready">'+X('I\'m ready','أنا جاهز')+'</button></section>';
+  }
+  const w=world(q.wid);
+  let body='<section class="card qcard"><span class="badge">'+esc(w.n)+(q.word?' · '+X('Word problem','مسألة كلامية'):'')+'</span>';
+  if(q.text)body+='<p class="wp">'+q.text+'</p>';else body+='<div class="expr">'+q.expr+'</div>';
+  if(QZ.fb){
+    const f=QZ.fb;
+    body+='<div class="fb '+(f.ok?'ok':'no')+'" role="status"><h3>'+(f.ok?'✅ ':'❌ ')+esc(f.msg)+'</h3><p>'+X('Answer:','الجواب:')+' <b>'+(q.kind==='dec'?'<bdi dir="ltr">'+esc(dstr(q.ans))+'</bdi>':ansH(q.ans))+(q.unit?' '+esc(q.unit):'')+'</b>'+(f.pts?' &nbsp;<span class="pill">+'+f.pts+' '+X('points','نقطة')+'</span>':'')+'</p></div>';
+    if(m!=='blitz'){
+      body+='<details class="steps"'+(f.ok?'':' open')+'><summary>'+X('How it works','كيف يعمل الحل')+'</summary><ol>'+q.steps.map(s=>'<li>'+s+'</li>').join('')+'</ol></details>';
+      body+='<div class="row" style="margin-top:14px"><button class="btn b-orange big" data-a="next" id="nextbtn">'+(QZ.i+1>=QZ.count?X('Finish','إنهاء'):X('Next','التالي'))+' '+NEXT+'</button></div>';
+    }
+  }else{
+    body+=inputArea(q)+'<p class="msg" id="msg" aria-live="polite"></p><div class="row" style="margin-top:8px"><button class="btn b-green" data-a="submit">'+X('Check ✔','تحقق ✔')+'</button>'
+      +(QZ.hints?'<button class="btn b-yellow" data-a="hint">'+X('💡 Hint','💡 تلميح')+'</button>':'')+(m==='blitz'?'<button class="btn b-plain" data-a="skip">'+X('Skip','تخطَّ')+'</button>':'')+'</div>';
+  }
+  body+='</section>';
+  if(m==='battle')body+='<section class="card" style="margin-top:14px"><h3>'+X('Live standings','الترتيب المباشر')+'</h3><div id="liveStand">'+liveStanding()+'</div></section>';
+  return head+body;
+}
+function rResult(){
+  const R=S.result;
+  if(R.mode==='level'){
+    const w=WORLDS[R.wi],nextL=R.lv<3?R.lv+1:0,nextW=R.lv===3&&R.wi<WORLDS.length-1;
+    return '<section class="card" style="text-align:center"><h2>'+(R.stars>0?X('Level complete! 🎉','أنهيت المستوى! 🎉'):X('So close! Try again 💪','اقتربت كثيرًا! حاول مرة أخرى 💪'))+'</h2><p style="margin:6px 0">'+esc(w.n)+' · '+X('Level ','المستوى ')+R.lv+'</p><div class="stars" style="font-size:2.6rem">'+'★'.repeat(R.stars)+'☆'.repeat(3-R.stars)+'</div>'
+     +'<p style="margin:8px 0"><b>'+R.correct+' / '+R.count+'</b> '+X('correct','صحيحة')+' · <b>+'+R.score+'</b> '+X('points','نقطة')+' · '+X('best streak','أفضل تتابع')+' <b>'+R.best+'</b></p>'
+     +(R.stars===0?'<p class="muted">'+X('You need 3 correct answers to earn a star. Review the lesson and try again!','تحتاج إلى 3 إجابات صحيحة لتربح نجمة. راجع الدرس وحاول مرة أخرى!')+'</p>':'')
+     +'<div class="row c" style="margin-top:14px">'
+     +(R.stars>0&&nextL?'<button class="btn b-green big" data-a="level" data-w="'+R.wi+'" data-l="'+nextL+'">'+X('Next level →','المستوى التالي ←')+'</button>':'')
+     +(R.stars>0&&nextW?'<button class="btn b-green big" data-a="level" data-w="'+(R.wi+1)+'" data-l="1">'+X('Next world →','العالم التالي ←')+'</button>':'')
+     +'<button class="btn b-orange" data-a="level" data-w="'+R.wi+'" data-l="'+R.lv+'">'+X('Play again','العب مرة أخرى')+'</button><button class="btn b-plain" data-a="lesson" data-w="'+R.wi+'">📖 '+X('Lesson','الدرس')+'</button><button class="btn b-plain" data-a="map">'+X('Map','الخريطة')+'</button></div></section>';
+  }
+  if(R.mode==='blitz')return '<section class="card" style="text-align:center"><h2>'+X('Time\'s up! ⏱','انتهى الوقت! ⏱')+'</h2><p class="disp" style="font-size:3rem;margin:6px 0">'+R.score+'</p><p><b>'+R.correct+'</b> '+X('correct out of','صحيحة من')+' '+R.done+' · '+X('best streak','أفضل تتابع')+' <b>'+R.best+'</b></p><p style="margin:8px 0">'+(R.newBest?X('🏅 New personal best!','🏅 رقم شخصي جديد!'):X('Your best:','أفضل نتيجة لك:')+' <b>'+P.blitz+'</b>')+'</p><div class="row c" style="margin-top:12px"><button class="btn b-orange big" data-a="blitzgo">'+X('Play again','العب مرة أخرى')+'</button><button class="btn b-plain" data-a="home">'+X('Home','الرئيسية')+'</button></div></section>';
+  if(R.mode==='duel'){
+    const a=R.players[0],b=R.players[1];const tie=a.score===b.score;const win=a.score>b.score?a:b;
+    return '<section class="card" style="text-align:center"><h2>'+(tie?X('It\'s a tie! 🤝','تعادل! 🤝'):esc(win.avatar)+' '+esc(win.name)+X(' wins! 🏆',' يفوز! 🏆'))+'</h2><div class="pl" style="margin:14px 0">'+R.players.map(p=>'<div><span>'+esc(p.avatar)+' '+esc(p.name)+'</span><b>'+p.score+'</b><small>'+p.correct+' '+X('correct','صحيحة')+'</small></div>').join('')+'</div><div class="row c"><button class="btn b-pink big" data-a="duelgo">'+X('Rematch','مباراة إعادة')+'</button><button class="btn b-plain" data-a="home">'+X('Home','الرئيسية')+'</button></div></section>';
+  }
+  return '<section class="card" style="text-align:center"><h2>'+X('Battle finished! 🏟️','انتهت المعركة! 🏟️')+'</h2><p class="disp" style="font-size:3rem;margin:6px 0">'+R.score+'</p><p><b>'+R.correct+'</b> / '+R.count+' '+X('correct','صحيحة')+'</p>'
+   +(Online.db&&Online.code?'<h3 style="margin-top:16px;text-align:start">'+X('Round ranking (live)','ترتيب الجولة (مباشر)')+'</h3><div id="roundList" style="text-align:start">'+boardRows(Online.rboard,'score',X('Score','النتيجة'))+'</div>':'<p class="muted" style="margin-top:10px">'+X('Join a class in Class Arena to see how classmates did.','انضم إلى فصل في ساحة الفصل لترى نتائج زملائك.')+'</p>')
+   +'<div class="row c" style="margin-top:14px"><button class="btn b-purple" data-a="arena">'+X('Back to arena','العودة إلى الساحة')+'</button><button class="btn b-plain" data-a="home">'+X('Home','الرئيسية')+'</button></div></section>';
+}
+function seg(name,opts,cur){return '<div class="seg" role="group">'+opts.map(o=>'<button class="btn'+(cur===o[0]?' sel':'')+'" data-a="set" data-k="'+name+'" data-v="'+o[0]+'">'+o[1]+'</button>').join('')+'</div>'}
+function rBlitzSetup(){
+  return backBtn()+'<section class="card"><h2>⚡ '+X('Speed Blitz','تحدي السرعة')+'</h2><p style="margin:6px 0">'+X('You have <b>60 seconds</b>. One try per question. Build a streak for bonus points!','لديك <b>60 ثانية</b>. محاولة واحدة لكل سؤال. كوّن سلسلة إجابات صحيحة لتربح نقاطًا إضافية!')+'</p>'
+   +'<label class="lb">'+X('Topic','الموضوع')+'</label>'+seg('cat',CATS(),S.setup.cat)+'<label class="lb">'+X('Difficulty','الصعوبة')+'</label>'+seg('diff',DIFFS(),S.setup.diff)
+   +'<p style="margin:12px 0">'+X('Your best:','أفضل نتيجة لك:')+' <b>'+P.blitz+'</b> '+X('points','نقطة')+'</p><button class="btn b-orange big" data-a="blitzgo">'+X('Start!','ابدأ!')+'</button></section>';
+}
+function rDuelSetup(){
+  return backBtn()+'<section class="card"><h2>🥊 '+X('Duel','المنازلة')+'</h2><p style="margin:6px 0">'+X('Two players share one screen and take turns. 5 questions each. Fastest correct answers earn bonus points!','يتشارك لاعبان الشاشة نفسها ويتناوبان. 5 أسئلة لكل لاعب. الإجابات الصحيحة الأسرع تكسب نقاطًا إضافية!')+'</p>'
+   +'<label class="lb" for="d1">'+X('Player 1','اللاعب 1')+'</label><input id="d1" class="txt" dir="auto" maxlength="16" value="'+esc(S.setup.p1||P.name)+'">'
+   +'<label class="lb" for="d2">'+X('Player 2','اللاعب 2')+'</label><input id="d2" class="txt" dir="auto" maxlength="16" value="'+esc(S.setup.p2||X('Player 2','اللاعب 2'))+'">'
+   +'<label class="lb">'+X('Topic','الموضوع')+'</label>'+seg('cat',CATS(),S.setup.cat)+'<label class="lb">'+X('Difficulty','الصعوبة')+'</label>'+seg('diff',DIFFS(),S.setup.diff)
+   +'<div style="margin-top:16px"><button class="btn b-pink big" data-a="duelgo">'+X('Start duel','ابدأ المنازلة')+'</button></div></section>';
+}
+function rArena(){
+  const st=Online.status;
+  let inner='';
+  const stTxt=st==='checking'?X('Checking the connection…','جارٍ فحص الاتصال…'):st==='on'?(Online.room&&Online.db?X('Online play is ready.','اللعب عبر الإنترنت جاهز.'):Online.room?X('Live room is ready (leaderboard is not available here).','الغرفة المباشرة جاهزة (لوحة الصدارة غير متاحة هنا).'):X('Class leaderboard is ready (live room is not available here).','لوحة صدارة الفصل جاهزة (الغرفة المباشرة غير متاحة هنا).')):X('Online play is not available in this window.','اللعب عبر الإنترنت غير متاح في هذه النافذة.');
+  inner+='<div class="card"><h2>🏟️ '+X('Class Arena','ساحة الفصل')+'</h2><p style="margin:6px 0">'+X('Everyone who opens this game link and types the <b>same class code</b> plays the <b>same questions</b> at the same time. Scores update live!','كل من يفتح رابط اللعبة ويكتب <b>رمز الفصل نفسه</b> يلعب <b>الأسئلة نفسها</b> في الوقت نفسه. والنتائج تتحدّث مباشرة!')+'</p><p><span class="pill">'+stTxt+'</span></p>';
+  if(st==='off')inner+='<p class="muted" style="margin-top:8px">'+X('You can still play a practice battle on your own, or challenge a friend in <b>Duel</b> on one device.','ما زال بإمكانك لعب معركة تدريب بمفردك، أو تحدي صديق في <b>المنازلة</b> على جهاز واحد.')+'</p>';
+  inner+='</div>';
+  if(!Online.code){
+    inner+='<div class="card"><h3>'+X('Join your class','انضم إلى فصلك')+'</h3><label class="lb" for="ccode">'+X('Class code (letters and numbers, 3 to 14)','رمز الفصل (حروف إنجليزية وأرقام، من 3 إلى 14)')+'</label><input id="ccode" class="txt" dir="ltr" maxlength="14" autocomplete="off" placeholder="'+X('Example: 6EINSTEIN','مثال: 6EINSTEIN')+'" value="'+esc(DB.prefs.code||'')+'"><div style="margin-top:14px"><button class="btn b-purple big" data-a="join">'+X('Join','انضم')+'</button></div></div>';
+  }else{
+    const a=S.arena;
+    inner+='<div class="card"><div class="row"><h3>'+X('Class:','الفصل:')+' <span class="pill" style="font-size:1.1rem">'+esc(Online.code)+'</span></h3><span class="sp"></span><button class="btn b-plain" data-a="leave" style="padding:4px 12px;min-height:38px">'+X('Leave','مغادرة')+'</button></div>'
+     +'<h3 style="margin-top:12px">'+X('Who is here','من هنا')+'</h3><div id="peerList">'+peerRows()+'</div></div>'
+     +'<div class="card"><h3>'+X('Battle setup','إعداد المعركة')+'</h3><p class="muted">'+X('Agree on the round, topic and level with your teacher, then tap Start together.','اتفقوا مع معلمكم على الجولة والموضوع والصعوبة، ثم اضغطوا ابدأ معًا.')+'</p>'
+     +'<label class="lb">'+X('Round','الجولة')+'</label>'+seg('around',[1,2,3,4,5,6].map(n=>[n,X('Round ','الجولة ')+n]),a.round)+'<label class="lb">'+X('Topic','الموضوع')+'</label>'+seg('acat',CATS(),a.cat)+'<label class="lb">'+X('Difficulty','الصعوبة')+'</label>'+seg('adiff',DIFFS(),a.diff)
+     +'<div style="margin-top:16px"><button class="btn b-purple big" data-a="battlego">'+X('Start battle!','ابدأ المعركة!')+'</button></div></div>'
+     +'<div class="card"><h3>'+X('Class leaderboard (total points)','لوحة صدارة الفصل (مجموع النقاط)')+'</h3><div id="boardList">'+boardRows(Online.board,'points',X('Points','النقاط'))+'</div></div>';
+  }
+  return backBtn()+inner;
+}
+function rBoard(){
+  const r=rankOf(P.points);
+  const hall=DB.hall.slice().sort((a,b)=>b.score-a.score).slice(0,10);
+  return backBtn()+'<section class="card"><h2>🏆 '+esc(r.cur.n[li()])+'</h2><p>'+fmtN(P.points)+' '+X('points','نقطة')+(r.nx?' · '+X('next rank:','الرتبة التالية:')+' <b>'+esc(r.nx.n[li()])+'</b> '+X('at','عند')+' '+fmtN(r.nx.p):' · '+X('top rank reached!','وصلت إلى أعلى رتبة!'))+'</p><div class="rankbar" role="progressbar" aria-valuenow="'+r.pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+r.pct+'%"></i></div>'
+   +'<p class="muted">'+X('Correct answers: '+fmtN(P.correct)+' of '+fmtN(P.solved)+' tried','الإجابات الصحيحة: '+fmtN(P.correct)+' من '+fmtN(P.solved)+' محاولة')+'</p></section>'
+   +'<section class="card"><h3>'+X('Trophies','الألقاب')+' ('+P.badges.length+'/'+Object.keys(BADGES).length+')</h3><div class="trophies">'+Object.keys(BADGES).map(k=>{const b=BADGES[k],has=P.badges.includes(k);return '<div class="tro'+(has?'':' off')+'"><div class="em">'+b[0]+'</div><b>'+esc(b[1][li()])+'</b><small>'+esc(b[2][li()])+'</small></div>'}).join('')+'</div></section>'
+   +'<section class="card"><h3>'+X('Hall of Fame (this device)','لوحة الشرف (هذا الجهاز)')+'</h3>'+(hall.length?'<table class="lt"><thead><tr><th></th><th>'+X('Player','اللاعب')+'</th><th>'+X('Mode','النمط')+'</th><th>'+X('Score','النتيجة')+'</th></tr></thead><tbody>'+hall.map((h,i)=>'<tr><td class="rankn">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</td><td>'+esc(h.avatar)+' '+esc(h.name)+'</td><td>'+esc(hallName(h.mode))+'</td><td>'+fmtN(h.score)+'</td></tr>').join('')+'</tbody></table>':'<p class="muted">'+X('Play Speed Blitz or a Duel to get on the board!','العب تحدي السرعة أو منازلة لتظهر في اللوحة!')+'</p>')+'</section>'
+   +(Online.code?'<section class="card"><h3>'+X('Class leaderboard:','لوحة صدارة الفصل:')+' '+esc(Online.code)+'</h3><div id="boardList">'+boardRows(Online.board,'points',X('Points','النقاط'))+'</div></section>':'');
+}
+function rFun(){
+  const jk=jokes(),j=jk[S.ji%jk.length],fl=facts(),f=fl[S.fi%fl.length];
+  return backBtn()+'<div class="grid2" style="margin-top:0"><section class="card"><h2>😂 '+X('Joke time','وقت النكات')+'</h2><p class="joke" style="margin:10px 0">'+esc(j[0])+'</p><p id="punch" class="joke" hidden><b>'+esc(j[1])+'</b></p><div class="row"><button class="btn b-yellow" data-a="punch">'+X('Punchline!','الجواب!')+'</button><button class="btn b-plain" data-a="joke">'+X('Another joke','نكتة أخرى')+'</button></div></section>'
+   +'<section class="card"><h2>'+f[0]+' '+X('Fun facts','معلومات ممتعة')+'</h2><p style="margin:10px 0;font-size:1.15rem">'+esc(f[1])+'</p><div class="row"><button class="btn b-cyan" data-a="fact">'+X('Next fact','المعلومة التالية')+'</button></div></section></div>'
+   +'<section class="card" style="margin-top:18px"><h2>🧠 '+X('Trivia challenge','تحدي الأسئلة')+'</h2><p style="margin:6px 0">'+X('5 quick questions. 20 points for each right answer!','5 أسئلة سريعة. 20 نقطة لكل إجابة صحيحة!')+'</p><button class="btn b-green big" data-a="trivia">'+X('Start trivia','ابدأ الأسئلة')+'</button></section>';
+}
+let TV=null;
+function rTrivia(){
+  const q=TV.qs[TV.i];
+  return '<div class="qh"><button class="btn b-plain" data-a="fun" style="padding:4px 12px;min-height:38px" aria-label="'+X('Quit','خروج')+'">✕</button><div class="dots">'+TV.qs.map((_,i)=>'<span class="'+(i<TV.i?'d':i===TV.i?'n':'')+'"></span>').join('')+'</div><span class="chip">+'+TV.score+'</span></div>'
+   +'<section class="card qcard"><span class="badge">'+X('Trivia '+(TV.i+1)+' of 5','السؤال '+(TV.i+1)+' من 5')+'</span><p class="wp">'+esc(q[0])+'</p><div class="opts">'+TV.order.map((oi,k)=>'<button class="btn b-plain'+(TV.picked!==null?(oi===q[2]?' right':(k===TV.picked?' wrong':'')):'')+'" data-a="tans" data-k="'+k+'" '+(TV.picked!==null?'disabled':'')+'><bdi>'+esc(q[1][oi])+'</bdi></button>').join('')+'</div>'
+   +(TV.picked!==null?'<div class="row" style="margin-top:14px"><button class="btn b-orange big" data-a="tnext">'+(TV.i>=4?X('Finish','إنهاء'):X('Next','التالي'))+' '+NEXT+'</button></div>':'')+'</section>';
+}
+function rTriviaEnd(){
+  return '<section class="card" style="text-align:center"><h2>'+X('Trivia done! 🎉','انتهت الأسئلة! 🎉')+'</h2><p class="disp" style="font-size:3rem;margin:6px 0">'+TV.right+' / 5</p><p>+'+TV.score+' '+X('points','نقطة')+'</p><div class="row c" style="margin-top:14px"><button class="btn b-green big" data-a="trivia">'+X('Play again','العب مرة أخرى')+'</button><button class="btn b-plain" data-a="fun">'+X('Fun Zone','ركن المرح')+'</button></div></section>';
+}
+function rSettings(){
+  return backBtn()+'<section class="card"><h2>⚙️ '+X('Settings','الإعدادات')+'</h2>'
+   +'<label class="lb">'+X('Language','اللغة')+'</label>'+seg('lang',[['en','English'],['ar','العربية']],DB.prefs.lang)
+   +'<label class="lb">'+X('Look','المظهر')+'</label>'+seg('theme',[['auto',X('Auto','تلقائي')],['light',X('Light','فاتح')],['dark',X('Dark','داكن')]],DB.prefs.theme)
+   +'<label class="lb">'+X('Teacher mode','وضع المعلم')+'</label><p class="muted">'+X('Unlock every world and level so students can jump to any topic.','يفتح كل العوالم والمستويات ليتنقل الطلاب بين أي موضوع.')+'</p>'+seg('teacher',[[0,X('Off','إيقاف')],[1,X('On','تشغيل')]],DB.prefs.teacher?1:0)
+   +'<label class="lb">'+X('Players','اللاعبون')+'</label><div class="row"><button class="btn b-plain" data-a="who">'+X('Switch or add a player','تبديل لاعب أو إضافة لاعب')+'</button></div>'
+   +'<label class="lb">'+X('Reset','إعادة الضبط')+'</label><div class="row"><button class="btn '+(S.confirm?'b-red':'b-plain')+'" data-a="reset">'+(S.confirm?X('Tap again to erase '+esc(P.name)+'\'s progress','اضغط مرة أخرى لمسح تقدّم '+esc(P.name)):X('Reset my progress','إعادة ضبط تقدمي'))+'</button></div></section>';
+}
+const SCREENS={who:rWho,home:rHome,map:rMap,lesson:rLesson,quiz:rQuiz,result:rResult,blitzsetup:rBlitzSetup,duelsetup:rDuelSetup,arena:rArena,board:rBoard,fun:rFun,trivia:()=>TV.done?rTriviaEnd():rTrivia(),settings:rSettings};
+function render(){
+  const app=$('#app');
+  app.innerHTML=(S.screen==='who'&&!P?'':top())+SCREENS[S.screen]();
+  after();
+}
+function after(){
+  if(S.screen==='quiz'&&QZ){
+    if(QZ.mode==='blitz'&&!TM.length){TM.push(setInterval(tickBlitz,200))}
+    if(!QZ.fb&&!(QZ.mode==='duel'&&QZ.gate)){const f=$('#a1')||$('#fw');if(f)f.focus({preventScroll:true})}
+    if(QZ.mode==='blitz')tickBlitz(true);
+    if(QZ.fb&&$('#nextbtn'))$('#nextbtn').focus({preventScroll:true});
+  }
+}
+function go(s,extra){
+  stopTimers();if(extra)Object.assign(S,extra);S.screen=s;S.confirm=false;
+  Snd.music(s==='quiz'?'game':'menu');
+  render();window.scrollTo(0,0);
+}
+
+/* ================= quiz engine ================= */
+function startQuiz(cfg){
+  stopTimers();
+  QZ=Object.assign({i:0,qs:[],score:0,correct:0,streak:0,best:0,tries:0,hint:false,fb:null,log:[],done:0,gate:false,hints:false,maxTries:1,count:5},cfg);
+  showQ();
+}
+function showQ(){
+  if(!QZ.qs[QZ.i])QZ.qs[QZ.i]=QZ.gen(QZ.i);
+  QZ.tries=0;QZ.hint=false;QZ.fb=null;QZ.t0=Date.now();
+  QZ.gate=QZ.mode==='duel';
+  if(QZ.mode==='battle')Online.presence({state:'playing',qn:QZ.i+1,score:QZ.score,rk:QZ.key});
+  if(S.screen!=='quiz')go('quiz');else render();
+}
+function getVals(){return{a:($('#a1')||{}).value,w:($('#fw')||{}).value,n:($('#fn')||{}).value,d:($('#fd')||{}).value}}
+function setMsg(t,cls){const m=$('#msg');if(m){m.textContent=t;m.className='msg '+(cls||'')}}
+function calcPts(q,el,tries,hint){
+  let base=QZ.mode==='blitz'?50:Math.round(100*LEVELS[q.level-1].mult);
+  if(tries>=1)base=Math.round(base*.6);
+  if(hint)base=Math.max(10,base-20);
+  const speed=(QZ.mode==='duel'||QZ.mode==='battle')?Math.max(0,Math.round(50-el*2.5)):0;
+  const streak=QZ.mode==='duel'?0:Math.min(QZ.streak+1,5)*10;
+  return base+speed+streak;
+}
+function submitAnswer(){
+  if(!QZ||QZ.fb||QZ.gate)return;
+  const q=QZ.qs[QZ.i];
+  const r=checkAnswer(q,getVals());
+  if(r.invalid){setMsg(r.invalid,'warn');return}
+  if(r.partial){setMsg(r.partial,'warn');Snd.play('click');return}
+  const el=(Date.now()-QZ.t0)/1000;
+  P.solved++;
+  if(r.ok){
+    const pts=calcPts(q,el,QZ.tries,QZ.hint);
+    QZ.streak++;QZ.best=Math.max(QZ.best,QZ.streak);QZ.correct++;QZ.score+=pts;QZ.log[QZ.i]=true;QZ.done++;
+    P.correct++;
+    if(QZ.mode==='duel'){const p=QZ.players[QZ.i%2];p.score+=pts;p.correct++}else addPoints(pts);
+    if(QZ.streak>=5)giveBadge('streak5');
+    Snd.play(QZ.streak>=3?'coin':'ok');
+    const msgs=isAr()?['صحيح!','أحسنت!','رائع!','أصبت الهدف!','تفكير ذكي!','عمل ممتاز!']:['Correct!','Nice one!','Boom!','You nailed it!','Sharp thinking!','Great work!'];
+    QZ.fb={ok:true,msg:msgs[Math.floor(Math.random()*msgs.length)]+(QZ.streak>=3?' 🔥 '+QZ.streak+X(' in a row',' متتالية'):''),pts};
+    if(QZ.mode!=='blitz')burst(QZ.streak>=3?40:22);
+    save();
+    if(QZ.mode==='battle')Online.presence({state:'playing',qn:QZ.i+1,score:QZ.score,rk:QZ.key});
+    if(QZ.mode==='blitz'){render();setTimeout(nextQ,350)}else render();
+  }else{
+    QZ.tries++;QZ.streak=0;
+    if(QZ.tries>=QZ.maxTries){
+      QZ.log[QZ.i]=false;QZ.done++;save();
+      Snd.play('no');
+      QZ.fb={ok:false,msg:QZ.maxTries>1?X('Not this time. Study the steps below.','ليس هذه المرة. ادرس الخطوات أدناه.'):X('Not quite.','ليست صحيحة.'),pts:0};
+      if(QZ.mode==='battle')Online.presence({state:'playing',qn:QZ.i+1,score:QZ.score,rk:QZ.key});
+      if(QZ.mode==='blitz'){render();setTimeout(nextQ,1100)}else render();
+    }else{
+      Snd.play('no');
+      setMsg(X('Not quite. Try again! Tap 💡 Hint for a clue.','ليست صحيحة. حاول مرة أخرى! اضغط 💡 تلميح للمساعدة.'),'warn');
+      const c=$('.qcard');if(c){c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake')}
+      const f=$('#a1')||$('#fn')||$('#fw');if(f){f.select&&f.select();f.focus({preventScroll:true})}
+    }
+  }
+}
+function nextQ(){
+  if(!QZ)return;
+  if(QZ.mode==='blitz'&&S.screen!=='quiz')return;
+  QZ.i++;
+  if(QZ.i>=QZ.count)return finishQuiz();
+  showQ();
+}
+function tickBlitz(force){
+  if(!QZ||QZ.mode!=='blitz')return;
+  const left=Math.max(0,QZ.timed-(Date.now()-QZ.start)/1000);
+  const b=$('#tbar'),n=$('#tnum');
+  if(b)b.style.width=(left/QZ.timed*100)+'%';
+  if(n){const s=Math.ceil(left);if(n.dataset.s!==String(s)){n.dataset.s=String(s);n.textContent='⏱ '+s;if(s<=10&&s>0&&force!==true)Snd.play('tick')}}
+  if(left<=0&&force!==true)finishQuiz();
+}
+function addHall(mode,score){DB.hall.push({name:P.name,avatar:P.avatar,mode,score,t:Date.now()});DB.hall=DB.hall.sort((a,b)=>b.score-a.score).slice(0,30);save()}
+function finishQuiz(){
+  stopTimers();
+  const m=QZ.mode;
+  if(m==='level'){
+    const st=QZ.correct>=5?3:QZ.correct>=4?2:QZ.correct>=3?1:0;
+    const k=QZ.wid+'-'+QZ.level;
+    if(st>(P.stars[k]||0))P.stars[k]=st;
+    if(st>0)giveBadge('first');
+    if(QZ.correct===QZ.count)giveBadge('perfect');
+    if(WORLDS.filter(w=>w.cat==='dec').every(w=>stars(w.id,3)>0))giveBadge('dec');
+    if(WORLDS.filter(w=>w.cat==='frac').every(w=>stars(w.id,3)>0))giveBadge('frac');
+    save();Online.syncProfile();
+    S.result={mode:'level',wi:WORLDS.findIndex(w=>w.id===QZ.wid),lv:QZ.level,stars:st,correct:QZ.correct,count:QZ.count,score:QZ.score,best:QZ.best};
+    Snd.play(st>0?'win':'lose');if(st>0)burst(60);
+  }else if(m==='blitz'){
+    const nb=QZ.score>P.blitz;if(nb)P.blitz=QZ.score;
+    if(QZ.correct>=10)giveBadge('blitz');
+    addHall('blitz:'+QZ.cat,QZ.score);save();Online.syncProfile();
+    S.result={mode:'blitz',score:QZ.score,correct:QZ.correct,done:QZ.done,best:QZ.best,newBest:nb};
+    Snd.play('win');burst(50);
+  }else if(m==='duel'){
+    const a=QZ.players[0],b=QZ.players[1];
+    if(a.score!==b.score){giveBadge('duel')}
+    addHall('duel',Math.max(a.score,b.score));
+    S.result={mode:'duel',players:QZ.players};
+    Snd.play('win');burst(60);
+  }else{
+    giveBadge('battle');
+    Online.presence({state:'done',score:QZ.score,qn:QZ.count,rk:QZ.key});
+    Online.writeRound(QZ.key,QZ.score,QZ.correct);Online.watchRound(QZ.key);Online.syncProfile();
+    addHall('battle',QZ.score);save();
+    S.result={mode:'battle',score:QZ.score,correct:QZ.correct,count:QZ.count};
+    Snd.play('win');burst(50);
+  }
+  go('result');
+}
+function startLevel(wi,lv){
+  const w=WORLDS[wi],R=newRng();
+  startQuiz({mode:'level',wid:w.id,level:lv,count:5,maxTries:2,hints:true,gen:i=>makeQ(w.id,lv,isWord(lv,i),R)});
+}
+function startBlitz(){
+  const R=newRng(),ws=worldsOf(S.setup.cat),lv=S.setup.diff;
+  startQuiz({mode:'blitz',cat:S.setup.cat,count:Infinity,timed:60,start:Date.now(),gen:()=>makeQ(R.pick(ws).id,lv,R.int(0,2)===0,R)});
+}
+function startDuel(){
+  const R=newRng(),ws=worldsOf(S.setup.cat),lv=S.setup.diff;
+  const n1=($('#d1')?$('#d1').value:S.setup.p1||P.name).trim()||X('Player 1','اللاعب 1'),n2=($('#d2')?$('#d2').value:S.setup.p2||'').trim()||X('Player 2','اللاعب 2');
+  S.setup.p1=n1;S.setup.p2=n2;
+  startQuiz({mode:'duel',count:10,players:[{name:n1,avatar:'🔵',score:0,correct:0},{name:n2,avatar:'🟠',score:0,correct:0}],gen:i=>makeQ(R.pick(ws).id,lv,i%3!==0,R)});
+}
+function startBattle(){
+  const a=S.arena,key='r'+a.round+'-d'+a.diff+'-'+a.cat;
+  const R=makeRng(hashStr(Online.code+'|'+key)),ws=worldsOf(a.cat);
+  const qs=[];for(let i=0;i<10;i++)qs.push(makeQ(R.pick(ws).id,a.diff,a.diff===1?i>=6:i%2===1,R));
+  Online.watchRound(key);
+  startQuiz({mode:'battle',key,count:10,qs,gen:i=>qs[i]});
+}
+
+/* ================= actions ================= */
+const ACT={
+  home(){go('home')},
+  lang(t){DB.prefs.lang=(t&&t.dataset&&t.dataset.v)||(isAr()?'en':'ar');save();applyLang();render()},
+  map(){go('map')},
+  who(){go('who')},
+  pick(t){DB.cur=t.dataset.id;P=DB.profiles[DB.cur];save();go('home')},
+  av(t){S.avSel=t.dataset.v;const n=($('#pname')||{}).value||'';render();const i=$('#pname');if(i){i.value=n;i.focus()}},
+  create(){const n=($('#pname').value||'').trim();if(!n){$('#pname').focus();toast(X('Type your name first','اكتب اسمك أولًا'));return}newProfile(n,S.avSel);Snd.play('coin');go('home')},
+  tmusic(){Snd.setMusic(!DB.prefs.music);render()},
+  tsfx(){Snd.setSfx(!DB.prefs.sfx);render()},
+  settings(){go('settings')},
+  set(t){
+    const k=t.dataset.k,v=t.dataset.v;
+    if(k==='theme'){DB.prefs.theme=v;save();applyTheme()}
+    else if(k==='lang'){DB.prefs.lang=v;save();applyLang()}
+    else if(k==='teacher'){DB.prefs.teacher=v==='1';save()}
+    else if(k==='cat')S.setup.cat=v;
+    else if(k==='diff')S.setup.diff=+v;
+    else if(k==='around')S.arena.round=+v;
+    else if(k==='acat')S.arena.cat=v;
+    else if(k==='adiff')S.arena.diff=+v;
+    const d1=$('#d1')?$('#d1').value:null,d2=$('#d2')?$('#d2').value:null;
+    if(d1!==null)S.setup.p1=d1;if(d2!==null)S.setup.p2=d2;
+    render();
+  },
+  reset(){if(!S.confirm){S.confirm=true;render();return}P.points=0;P.stars={};P.badges=[];P.blitz=0;P.solved=0;P.correct=0;P.seen={};save();S.confirm=false;toast(X('Progress reset','تمت إعادة الضبط'));render()},
+  lesson(t){go('lesson',{lw:+t.dataset.w,lp:0,ls:0})},
+  lnext(){if(S.lp===0){S.lp=1;S.ls=0}else if(S.lp===1){const L=LESSONS[WORLDS[S.lw].id];if(S.ls<L.stages.length-1)S.ls++;else S.lp=2}Snd.play('click');render();window.scrollTo(0,0)},
+  lprev(){if(S.lp===2){S.lp=1;S.ls=LESSONS[WORLDS[S.lw].id].stages.length-1}else if(S.lp===1){if(S.ls>0)S.ls--;else S.lp=0}render();window.scrollTo(0,0)},
+  level(t){startLevel(+t.dataset.w,+t.dataset.l)},
+  submit(){submitAnswer()},
+  hint(){if(!QZ||QZ.fb)return;QZ.hint=true;setMsg('💡 '+'',' ');const m=$('#msg');if(m){m.innerHTML='💡 '+QZ.qs[QZ.i].hint;m.className='msg'}Snd.play('click')},
+  skip(){if(!QZ||QZ.mode!=='blitz'||QZ.fb)return;QZ.streak=0;nextQ()},
+  next(){nextQ()},
+  ready(){QZ.gate=false;QZ.t0=Date.now();render()},
+  quit(){if(QZ&&QZ.mode==='battle')Online.presence({state:'lobby',score:0,qn:0,rk:''});const m=QZ&&QZ.mode;stopTimers();QZ=null;go(m==='level'?'map':m==='blitz'?'blitzsetup':m==='duel'?'duelsetup':m==='battle'?'arena':'home')},
+  blitzsetup(){go('blitzsetup')},
+  blitzgo(){startBlitz()},
+  duelsetup(){go('duelsetup')},
+  duelgo(){startDuel()},
+  arena(){go('arena');if(Online.status==='checking')Online.init()},
+  join(){const c=($('#ccode').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length<3){toast(X('Use 3 or more letters or numbers','استخدم 3 حروف إنجليزية أو أرقام على الأقل'));return}Online.join(c);Snd.play('coin');render()},
+  leave(){Online.leave();render()},
+  battlego(){startBattle()},
+  board(){go('board')},
+  fun(){go('fun')},
+  punch(){const p=$('#punch');if(p){p.hidden=false;Snd.play('coin')}},
+  joke(){S.ji=(S.ji+1)%jokes().length;render()},
+  fact(){S.fi=(S.fi+1)%facts().length;render()},
+  trivia(){const R=newRng();TV={qs:R.shuffle(TRIVIA_L[li()]).slice(0,5),i:0,score:0,right:0,picked:null,done:false,order:[0,1,2,3]};TV.order=R.shuffle([0,1,2,3]);go('trivia')},
+  tans(t){
+    if(TV.picked!==null)return;const k=+t.dataset.k,q=TV.qs[TV.i];TV.picked=k;
+    if(TV.order[k]===q[2]){TV.score+=20;TV.right++;addPoints(20);Snd.play('ok');burst(20)}else Snd.play('no');
+    render();
+  },
+  tnext(){
+    TV.i++;
+    if(TV.i>=5){TV.done=true;if(TV.right===5)giveBadge('trivia');Snd.play('win');burst(40)}else{TV.picked=null;TV.order=newRng().shuffle([0,1,2,3])}
+    render();window.scrollTo(0,0);
+  }
+};
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-a]');if(!t)return;
+  Snd.init();
+  const f=ACT[t.dataset.a];if(f){if(!['submit','hint','tans','tmusic','tsfx','punch'].includes(t.dataset.a))Snd.play('click');f(t,e)}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('ans')){e.preventDefault();submitAnswer()}
+  else if(e.key==='/'&&e.target.id==='fn'){e.preventDefault();const d=$('#fd');if(d)d.focus()}
+  else if(e.key==='Enter'&&e.target.id==='pname'){e.preventDefault();ACT.create()}
+  else if(e.key==='Enter'&&e.target.id==='ccode'){e.preventDefault();ACT.join()}
+});
+document.addEventListener('pointerdown',()=>Snd.init(),{once:true});
+
+/* ================= boot ================= */
+/*TESTHOOK*/
+applyTheme();
+applyLang();
+Online.init();
+if(P){Snd.music('menu');go('home')}else go('who');
+})();
+</script>
+</body>
+</html>
